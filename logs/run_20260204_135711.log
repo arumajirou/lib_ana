@@ -1,0 +1,8 @@
+2026-02-04 13:57:11,917 | INFO | bootstrap | PROJECT_ROOT=C:\lib_ana
+2026-02-04 13:57:11,917 | INFO | bootstrap | Python=3.11.13 | packaged by Anaconda, Inc. | (main, Jun  5 2025, 13:03:15) [MSC v.1929 64 bit (AMD64)]
+2026-02-04 13:57:11,917 | INFO | bootstrap | Platform=Windows-10-10.0.26200-SP0
+2026-02-04 13:57:11,917 | INFO | bootstrap | Log file=C:\lib_ana\logs\run_20260204_135711.log
+2026-02-04 13:59:13,745 | INFO | bootstrap | PROJECT_ROOT=C:\lib_ana
+2026-02-04 13:59:13,747 | INFO | bootstrap | Python=3.11.13 | packaged by Anaconda, Inc. | (main, Jun  5 2025, 13:03:15) [MSC v.1929 64 bit (AMD64)]
+2026-02-04 13:59:13,748 | INFO | bootstrap | Platform=Windows-10-10.0.26200-SP0
+2026-02-04 13:59:13,749 | INFO | bootstrap | Log file=C:\lib_ana\logs\run_20260204_135913.log

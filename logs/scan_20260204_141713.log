@@ -1,0 +1,4 @@
+2026-02-04 14:17:13,364 | INFO | lib_ana.api_scan | log_file=C:\lib_ana\logs\scan_20260204_141713.log
+2026-02-04 14:17:13,380 | INFO | lib_ana.runner | log_file=C:\lib_ana\logs\scan_20260204_141713.log
+2026-02-04 14:17:13,397 | INFO | lib_ana.runner | target=json include_submodules=False only_all=False
+2026-02-04 14:17:13,518 | INFO | lib_ana.api_scan | CSV written: C:\lib_ana\outputs\api_tables\json_api.csv (rows=7)

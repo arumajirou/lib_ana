@@ -1,0 +1,13 @@
+{
+  "targets": [
+    {
+      "name": "json",
+      "include_submodules": false,
+      "only_all": false
+    }
+  ],
+  "output": {
+    "encoding": "utf-8-sig",
+    "include_header": true
+  }
+}
