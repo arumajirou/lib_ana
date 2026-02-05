@@ -1,0 +1,1226 @@
+<html><head><meta charset='utf-8'>
+<style>body{font-family:system-ui,Segoe UI,Arial;margin:24px} table{border-collapse:collapse} td,th{border:1px solid #ddd;padding:6px} th{background:#f5f5f5} code,pre{background:#f8fafc;padding:8px;border-radius:8px}</style>
+<title>CLE V6 Report - timesfm</title></head><body>
+<h1>CLE V6 Report — timesfm</h1>
+<div style='color:#666'>Created: 2026-02-05T13:57:46.378299</div>
+<h2>Summary</h2>
+<pre>{
+  "Name": "timesfm",
+  "Modules": 12,
+  "Classes": 26,
+  "Functions": 5,
+  "Methods/Props": 9,
+  "External": 0,
+  "UniqueParamNames": 23,
+  "UniqueReturnTypes": 2,
+  "Errors": 3,
+  "ApiSurface": "module_public"
+}</pre>
+<h2>Tables</h2>
+<h3>Modules</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ID</th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Path</th>
+      <th>Parent</th>
+      <th>Module</th>
+      <th>OriginModule</th>
+      <th>OriginFile</th>
+      <th>Line</th>
+      <th>EndLine</th>
+      <th>LOC</th>
+      <th>Signature</th>
+      <th>DocSummary</th>
+      <th>ParamNames</th>
+      <th>ParamTypes</th>
+      <th>ReturnType</th>
+      <th>Events</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>timesfm</td>
+      <td>module</td>
+      <td>timesfm</td>
+      <td>timesfm</td>
+      <td></td>
+      <td>timesfm</td>
+      <td>timesfm</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\__init__.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.configs</td>
+      <td>module</td>
+      <td>configs</td>
+      <td>timesfm.configs</td>
+      <td>timesfm</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\configs.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.configs', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax</td>
+      <td>module</td>
+      <td>flax</td>
+      <td>timesfm.flax</td>
+      <td>timesfm</td>
+      <td>timesfm.flax</td>
+      <td>timesfm.flax</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\__init__.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.flax', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.dense</td>
+      <td>module</td>
+      <td>dense</td>
+      <td>timesfm.flax.dense</td>
+      <td>timesfm.flax</td>
+      <td>timesfm.flax.dense</td>
+      <td>timesfm.flax.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\dense.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.flax.dense', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.normalization</td>
+      <td>module</td>
+      <td>normalization</td>
+      <td>timesfm.flax.normalization</td>
+      <td>timesfm.flax</td>
+      <td>timesfm.flax.normalization</td>
+      <td>timesfm.flax.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\normalization.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.flax.normalization', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.transformer</td>
+      <td>module</td>
+      <td>transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\transformer.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.flax.transformer', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.util</td>
+      <td>module</td>
+      <td>util</td>
+      <td>timesfm.flax.util</td>
+      <td>timesfm.flax</td>
+      <td>timesfm.flax.util</td>
+      <td>timesfm.flax.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\util.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.flax.util', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch</td>
+      <td>module</td>
+      <td>torch</td>
+      <td>timesfm.torch</td>
+      <td>timesfm</td>
+      <td>timesfm.torch</td>
+      <td>timesfm.torch</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\__init__.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.torch', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.dense</td>
+      <td>module</td>
+      <td>dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\dense.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.torch.dense', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.normalization</td>
+      <td>module</td>
+      <td>normalization</td>
+      <td>timesfm.torch.normalization</td>
+      <td>timesfm.torch</td>
+      <td>timesfm.torch.normalization</td>
+      <td>timesfm.torch.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\normalization.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.torch.normalization', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer</td>
+      <td>module</td>
+      <td>transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.util</td>
+      <td>module</td>
+      <td>util</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\util.py</td>
+      <td></td>
+      <td></td>
+      <td>0</td>
+      <td></td>
+      <td></td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[]</td>
+      <td>{'module': 'timesfm.torch.util', 'is_external': False, 'api_surface': 'module_public'}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Classes</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ID</th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Path</th>
+      <th>Parent</th>
+      <th>Module</th>
+      <th>OriginModule</th>
+      <th>OriginFile</th>
+      <th>Line</th>
+      <th>EndLine</th>
+      <th>LOC</th>
+      <th>Signature</th>
+      <th>DocSummary</th>
+      <th>ParamNames</th>
+      <th>ParamTypes</th>
+      <th>ReturnType</th>
+      <th>Events</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>timesfm.ForecastConfig</td>
+      <td>class</td>
+      <td>ForecastConfig</td>
+      <td>timesfm.ForecastConfig</td>
+      <td>timesfm</td>
+      <td>timesfm</td>
+      <td>timesfm.configs</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\configs.py</td>
+      <td></td>
+      <td></td>
+      <td>40</td>
+      <td></td>
+      <td>Options for forecasting.  Attributes:   max_context: The maximum context length. This is used by the complied decode     function at inferen</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.TimesFM_2p5_200M_torch</td>
+      <td>class</td>
+      <td>TimesFM_2p5_200M_torch</td>
+      <td>timesfm.TimesFM_2p5_200M_torch</td>
+      <td>timesfm</td>
+      <td>timesfm</td>
+      <td>timesfm.timesfm_2p5.timesfm_2p5_torch</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\timesfm_2p5\timesfm_2p5_torch.py</td>
+      <td></td>
+      <td></td>
+      <td>207</td>
+      <td></td>
+      <td>PyTorch implementation of TimesFM 2.5 with 200M parameters.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm', 'is_external': False, 'bases': ['TimesFM_2p5', 'ModelHubMixin']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.configs.ForecastConfig</td>
+      <td>class</td>
+      <td>ForecastConfig</td>
+      <td>timesfm.configs.ForecastConfig</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\configs.py</td>
+      <td>22</td>
+      <td>60</td>
+      <td>40</td>
+      <td></td>
+      <td>Options for forecasting.  Attributes:   max_context: The maximum context length. This is used by the complied decode     function at inferen</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm.configs', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.configs.RandomFourierFeaturesConfig</td>
+      <td>class</td>
+      <td>RandomFourierFeaturesConfig</td>
+      <td>timesfm.configs.RandomFourierFeaturesConfig</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\configs.py</td>
+      <td>75</td>
+      <td>81</td>
+      <td>8</td>
+      <td></td>
+      <td>Framework-agnostic config for random fourier features.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm.configs', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.configs.ResidualBlockConfig</td>
+      <td>class</td>
+      <td>ResidualBlockConfig</td>
+      <td>timesfm.configs.ResidualBlockConfig</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\configs.py</td>
+      <td>64</td>
+      <td>71</td>
+      <td>9</td>
+      <td></td>
+      <td>Framework-agnostic config for a residual block.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm.configs', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.configs.StackedTransformersConfig</td>
+      <td>class</td>
+      <td>StackedTransformersConfig</td>
+      <td>timesfm.configs.StackedTransformersConfig</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\configs.py</td>
+      <td>101</td>
+      <td>105</td>
+      <td>6</td>
+      <td></td>
+      <td>Framework-agnostic config for a stacked transformers.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm.configs', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.configs.TransformerConfig</td>
+      <td>class</td>
+      <td>TransformerConfig</td>
+      <td>timesfm.configs.TransformerConfig</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>timesfm.configs</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\configs.py</td>
+      <td>85</td>
+      <td>97</td>
+      <td>14</td>
+      <td></td>
+      <td>Framework-agnostic config for a transformer.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm.configs', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.dense.ResidualBlock</td>
+      <td>class</td>
+      <td>ResidualBlock</td>
+      <td>timesfm.flax.dense.ResidualBlock</td>
+      <td>timesfm.flax.dense</td>
+      <td>timesfm.flax.dense</td>
+      <td>timesfm.flax.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\dense.py</td>
+      <td>34</td>
+      <td>69</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.dense', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.dense.RandomFourierFeatures</td>
+      <td>class</td>
+      <td>RandomFourierFeatures</td>
+      <td>timesfm.flax.dense.RandomFourierFeatures</td>
+      <td>timesfm.flax.dense</td>
+      <td>timesfm.flax.dense</td>
+      <td>timesfm.flax.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\dense.py</td>
+      <td>72</td>
+      <td>110</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.dense', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.normalization.RMSNorm</td>
+      <td>class</td>
+      <td>RMSNorm</td>
+      <td>timesfm.flax.normalization.RMSNorm</td>
+      <td>timesfm.flax.normalization</td>
+      <td>timesfm.flax.normalization</td>
+      <td>timesfm.flax.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\normalization.py</td>
+      <td>29</td>
+      <td>50</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.normalization', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.normalization.LayerNorm</td>
+      <td>class</td>
+      <td>LayerNorm</td>
+      <td>timesfm.flax.normalization.LayerNorm</td>
+      <td>timesfm.flax.normalization</td>
+      <td>timesfm.flax.normalization</td>
+      <td>timesfm.flax.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\normalization.py</td>
+      <td>53</td>
+      <td>71</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.normalization', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.transformer.RotaryPositionalEmbedding</td>
+      <td>class</td>
+      <td>RotaryPositionalEmbedding</td>
+      <td>timesfm.flax.transformer.RotaryPositionalEmbedding</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\transformer.py</td>
+      <td>67</td>
+      <td>115</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.transformer', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.transformer.PerDimScale</td>
+      <td>class</td>
+      <td>PerDimScale</td>
+      <td>timesfm.flax.transformer.PerDimScale</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\transformer.py</td>
+      <td>118</td>
+      <td>131</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.transformer', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.transformer.MultiHeadAttention</td>
+      <td>class</td>
+      <td>MultiHeadAttention</td>
+      <td>timesfm.flax.transformer.MultiHeadAttention</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\transformer.py</td>
+      <td>134</td>
+      <td>288</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.transformer', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.transformer.Transformer</td>
+      <td>class</td>
+      <td>Transformer</td>
+      <td>timesfm.flax.transformer.Transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\transformer.py</td>
+      <td>291</td>
+      <td>356</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.transformer', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.util.DecodeCache</td>
+      <td>class</td>
+      <td>DecodeCache</td>
+      <td>timesfm.flax.util.DecodeCache</td>
+      <td>timesfm.flax.util</td>
+      <td>timesfm.flax.util</td>
+      <td>timesfm.flax.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\util.py</td>
+      <td>33</td>
+      <td>39</td>
+      <td>9</td>
+      <td></td>
+      <td>Cache for decoding.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.util', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.dense.RandomFourierFeatures</td>
+      <td>class</td>
+      <td>RandomFourierFeatures</td>
+      <td>timesfm.torch.dense.RandomFourierFeatures</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\dense.py</td>
+      <td>59</td>
+      <td>94</td>
+      <td>36</td>
+      <td></td>
+      <td>Random Fourier features layer.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.dense', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.dense.ResidualBlock</td>
+      <td>class</td>
+      <td>ResidualBlock</td>
+      <td>timesfm.torch.dense.ResidualBlock</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\dense.py</td>
+      <td>23</td>
+      <td>56</td>
+      <td>34</td>
+      <td></td>
+      <td>Residual block with two linear layers and a linear residual connection.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.dense', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.normalization.RMSNorm</td>
+      <td>class</td>
+      <td>RMSNorm</td>
+      <td>timesfm.torch.normalization.RMSNorm</td>
+      <td>timesfm.torch.normalization</td>
+      <td>timesfm.torch.normalization</td>
+      <td>timesfm.torch.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\normalization.py</td>
+      <td>21</td>
+      <td>39</td>
+      <td>19</td>
+      <td></td>
+      <td>RMS normalization.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.normalization', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.DecodeCache</td>
+      <td>class</td>
+      <td>DecodeCache</td>
+      <td>timesfm.torch.transformer.DecodeCache</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\util.py</td>
+      <td></td>
+      <td></td>
+      <td>8</td>
+      <td></td>
+      <td>Cache for decoding.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.MultiHeadAttention</td>
+      <td>class</td>
+      <td>MultiHeadAttention</td>
+      <td>timesfm.torch.transformer.MultiHeadAttention</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td>169</td>
+      <td>304</td>
+      <td>136</td>
+      <td></td>
+      <td>Multi-head attention.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.PerDimScale</td>
+      <td>class</td>
+      <td>PerDimScale</td>
+      <td>timesfm.torch.transformer.PerDimScale</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td>154</td>
+      <td>166</td>
+      <td>13</td>
+      <td></td>
+      <td>Per-dimension scaling.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.RMSNorm</td>
+      <td>class</td>
+      <td>RMSNorm</td>
+      <td>timesfm.torch.transformer.RMSNorm</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\normalization.py</td>
+      <td></td>
+      <td></td>
+      <td>19</td>
+      <td></td>
+      <td>RMS normalization.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.RotaryPositionalEmbedding</td>
+      <td>class</td>
+      <td>RotaryPositionalEmbedding</td>
+      <td>timesfm.torch.transformer.RotaryPositionalEmbedding</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td>56</td>
+      <td>111</td>
+      <td>56</td>
+      <td></td>
+      <td>Rotary positional embedding.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.Transformer</td>
+      <td>class</td>
+      <td>Transformer</td>
+      <td>timesfm.torch.transformer.Transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td>307</td>
+      <td>370</td>
+      <td>64</td>
+      <td></td>
+      <td>Classic Transformer used in TimesFM.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'bases': ['Module']}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.util.DecodeCache</td>
+      <td>class</td>
+      <td>DecodeCache</td>
+      <td>timesfm.torch.util.DecodeCache</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\util.py</td>
+      <td>24</td>
+      <td>30</td>
+      <td>8</td>
+      <td></td>
+      <td>Cache for decoding.</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.util', 'is_external': False, 'bases': ['object']}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Functions</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ID</th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Path</th>
+      <th>Parent</th>
+      <th>Module</th>
+      <th>OriginModule</th>
+      <th>OriginFile</th>
+      <th>Line</th>
+      <th>EndLine</th>
+      <th>LOC</th>
+      <th>Signature</th>
+      <th>DocSummary</th>
+      <th>ParamNames</th>
+      <th>ParamTypes</th>
+      <th>ReturnType</th>
+      <th>Events</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>timesfm.flax.transformer.make_attn_mask</td>
+      <td>function</td>
+      <td>make_attn_mask</td>
+      <td>timesfm.flax.transformer.make_attn_mask</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>timesfm.flax.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\transformer.py</td>
+      <td>46</td>
+      <td>64</td>
+      <td>0</td>
+      <td></td>
+      <td>(AST only)</td>
+      <td>[]</td>
+      <td>[]</td>
+      <td></td>
+      <td>[build]</td>
+      <td>{'module': 'timesfm.flax.transformer', 'analysis_mode': 'ast', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.flax.util.scan_along_axis</td>
+      <td>function</td>
+      <td>scan_along_axis</td>
+      <td>timesfm.flax.util.scan_along_axis</td>
+      <td>timesfm.flax.util</td>
+      <td>timesfm.flax.util</td>
+      <td>timesfm.flax.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\flax\util.py</td>
+      <td>80</td>
+      <td>87</td>
+      <td>8</td>
+      <td>(f, init, xs, axis: int, **kwargs)</td>
+      <td>Scans along an axis.</td>
+      <td>[f, init, xs, axis, kwargs]</td>
+      <td>[, , , int, ]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.flax.util', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.make_attn_mask</td>
+      <td>function</td>
+      <td>make_attn_mask</td>
+      <td>timesfm.torch.transformer.make_attn_mask</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td>32</td>
+      <td>53</td>
+      <td>22</td>
+      <td>(query_length: int, num_all_masked_kv: torch.Tensor, query_index_offset: torch.Tensor | None = None, kv_length: int = 0) -&gt; torch.Tensor</td>
+      <td>Makes attention mask.</td>
+      <td>[query_length, num_all_masked_kv, query_index_offset, kv_length]</td>
+      <td>[int, Tensor, torch.Tensor | None, int]</td>
+      <td>Tensor</td>
+      <td>[build]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.util.revin</td>
+      <td>function</td>
+      <td>revin</td>
+      <td>timesfm.torch.util.revin</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\util.py</td>
+      <td>77</td>
+      <td>94</td>
+      <td>18</td>
+      <td>(x: torch.Tensor, mu: torch.Tensor, sigma: torch.Tensor, reverse: bool = False)</td>
+      <td>Reversible instance normalization.</td>
+      <td>[x, mu, sigma, reverse]</td>
+      <td>[Tensor, Tensor, Tensor, bool]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.util', 'is_external': False}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.util.update_running_stats</td>
+      <td>function</td>
+      <td>update_running_stats</td>
+      <td>timesfm.torch.util.update_running_stats</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch.util</td>
+      <td>timesfm.torch.util</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\util.py</td>
+      <td>33</td>
+      <td>74</td>
+      <td>42</td>
+      <td>(n: torch.Tensor, mu: torch.Tensor, sigma: torch.Tensor, x: torch.Tensor, mask: torch.Tensor) -&gt; tuple[tuple[torch.Tensor, torch.Tensor, torch.Tensor], tuple[torch.Tensor, torch.Tensor, torch.Tensor]]</td>
+      <td>Updates the running stats.</td>
+      <td>[n, mu, sigma, x, mask]</td>
+      <td>[Tensor, Tensor, Tensor, Tensor, Tensor]</td>
+      <td>tuple</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.util', 'is_external': False}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Methods</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ID</th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Path</th>
+      <th>Parent</th>
+      <th>Module</th>
+      <th>OriginModule</th>
+      <th>OriginFile</th>
+      <th>Line</th>
+      <th>EndLine</th>
+      <th>LOC</th>
+      <th>Signature</th>
+      <th>DocSummary</th>
+      <th>ParamNames</th>
+      <th>ParamTypes</th>
+      <th>ReturnType</th>
+      <th>Events</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>timesfm.TimesFM_2p5_200M_torch.compile</td>
+      <td>method</td>
+      <td>compile</td>
+      <td>timesfm.TimesFM_2p5_200M_torch.compile</td>
+      <td>timesfm.TimesFM_2p5_200M_torch</td>
+      <td>timesfm</td>
+      <td>timesfm.timesfm_2p5.timesfm_2p5_torch</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\timesfm_2p5\timesfm_2p5_torch.py</td>
+      <td></td>
+      <td></td>
+      <td>136</td>
+      <td>(self, forecast_config: timesfm.configs.ForecastConfig, **kwargs) -&gt; None</td>
+      <td>Attempts to compile the model for fast decoding.  See configs.ForecastConfig for more details on the supported flags.  Args:   forecast_conf</td>
+      <td>[self, forecast_config, kwargs]</td>
+      <td>[, ForecastConfig, ]</td>
+      <td></td>
+      <td>[config]</td>
+      <td>{'module': 'timesfm', 'is_external': False, 'member_of': 'timesfm.TimesFM_2p5_200M_torch'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.dense.RandomFourierFeatures.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.dense.RandomFourierFeatures.forward</td>
+      <td>timesfm.torch.dense.RandomFourierFeatures</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\dense.py</td>
+      <td></td>
+      <td></td>
+      <td>11</td>
+      <td>(self, x: torch.Tensor) -&gt; torch.Tensor</td>
+      <td>Define the computation performed at every call.  Should be overridden by all subclasses.  .. note::     Although the recipe for forward pass</td>
+      <td>[self, x]</td>
+      <td>[, Tensor]</td>
+      <td>Tensor</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.dense', 'is_external': False, 'member_of': 'timesfm.torch.dense.RandomFourierFeatures'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.dense.ResidualBlock.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.dense.ResidualBlock.forward</td>
+      <td>timesfm.torch.dense.ResidualBlock</td>
+      <td>timesfm.torch.dense</td>
+      <td>timesfm.torch.dense</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\dense.py</td>
+      <td></td>
+      <td></td>
+      <td>4</td>
+      <td>(self, x: torch.Tensor) -&gt; torch.Tensor</td>
+      <td>Define the computation performed at every call.  Should be overridden by all subclasses.  .. note::     Although the recipe for forward pass</td>
+      <td>[self, x]</td>
+      <td>[, Tensor]</td>
+      <td>Tensor</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.dense', 'is_external': False, 'member_of': 'timesfm.torch.dense.ResidualBlock'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.normalization.RMSNorm.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.normalization.RMSNorm.forward</td>
+      <td>timesfm.torch.normalization.RMSNorm</td>
+      <td>timesfm.torch.normalization</td>
+      <td>timesfm.torch.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\normalization.py</td>
+      <td></td>
+      <td></td>
+      <td>5</td>
+      <td>(self, inputs: torch.Tensor) -&gt; torch.Tensor</td>
+      <td>Define the computation performed at every call.  Should be overridden by all subclasses.  .. note::     Although the recipe for forward pass</td>
+      <td>[self, inputs]</td>
+      <td>[, Tensor]</td>
+      <td>Tensor</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.normalization', 'is_external': False, 'member_of': 'timesfm.torch.normalization.RMSNorm'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.MultiHeadAttention.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.transformer.MultiHeadAttention.forward</td>
+      <td>timesfm.torch.transformer.MultiHeadAttention</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td></td>
+      <td></td>
+      <td>81</td>
+      <td>(self, inputs_q: torch.Tensor, *, decode_cache: timesfm.torch.util.DecodeCache | None = None, patch_mask: torch.Tensor | None = None) -&gt; tuple[torch.Tensor, timesfm.torch.util.DecodeCache | None]</td>
+      <td>Define the computation performed at every call.  Should be overridden by all subclasses.  .. note::     Although the recipe for forward pass</td>
+      <td>[self, inputs_q, decode_cache, patch_mask]</td>
+      <td>[, Tensor, timesfm.torch.util.DecodeCache | None, torch.Tensor | None]</td>
+      <td>tuple</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'member_of': 'timesfm.torch.transformer.MultiHeadAttention'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.PerDimScale.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.transformer.PerDimScale.forward</td>
+      <td>timesfm.torch.transformer.PerDimScale</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td></td>
+      <td></td>
+      <td>5</td>
+      <td>(self, x: torch.Tensor) -&gt; torch.Tensor</td>
+      <td>Define the computation performed at every call.  Should be overridden by all subclasses.  .. note::     Although the recipe for forward pass</td>
+      <td>[self, x]</td>
+      <td>[, Tensor]</td>
+      <td>Tensor</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'member_of': 'timesfm.torch.transformer.PerDimScale'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.RMSNorm.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.transformer.RMSNorm.forward</td>
+      <td>timesfm.torch.transformer.RMSNorm</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.normalization</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\normalization.py</td>
+      <td></td>
+      <td></td>
+      <td>5</td>
+      <td>(self, inputs: torch.Tensor) -&gt; torch.Tensor</td>
+      <td>Define the computation performed at every call.  Should be overridden by all subclasses.  .. note::     Although the recipe for forward pass</td>
+      <td>[self, inputs]</td>
+      <td>[, Tensor]</td>
+      <td>Tensor</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'member_of': 'timesfm.torch.transformer.RMSNorm'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.RotaryPositionalEmbedding.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.transformer.RotaryPositionalEmbedding.forward</td>
+      <td>timesfm.torch.transformer.RotaryPositionalEmbedding</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td></td>
+      <td></td>
+      <td>42</td>
+      <td>(self, inputs: torch.Tensor, position: torch.Tensor | None = None)</td>
+      <td>Generates a JTensor of sinusoids with different frequencies.</td>
+      <td>[self, inputs, position]</td>
+      <td>[, Tensor, torch.Tensor | None]</td>
+      <td></td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'member_of': 'timesfm.torch.transformer.RotaryPositionalEmbedding'}</td>
+    </tr>
+    <tr>
+      <td>timesfm.torch.transformer.Transformer.forward</td>
+      <td>method</td>
+      <td>forward</td>
+      <td>timesfm.torch.transformer.Transformer.forward</td>
+      <td>timesfm.torch.transformer.Transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>timesfm.torch.transformer</td>
+      <td>C:\Users\hashimoto.ryohei\Miniconda3\envs\kaiseki\Lib\site-packages\timesfm\torch\transformer.py</td>
+      <td></td>
+      <td></td>
+      <td>17</td>
+      <td>(self, input_embeddings: torch.Tensor, patch_mask: torch.Tensor, decode_cache: timesfm.torch.util.DecodeCache | None = None) -&gt; tuple[torch.Tensor, timesfm.torch.util.DecodeCache | None]</td>
+      <td>Define the computation performed at every call.  Should be overridden by all subclasses.  .. note::     Although the recipe for forward pass</td>
+      <td>[self, input_embeddings, patch_mask, decode_cache]</td>
+      <td>[, Tensor, Tensor, timesfm.torch.util.DecodeCache | None]</td>
+      <td>tuple</td>
+      <td>[other]</td>
+      <td>{'module': 'timesfm.torch.transformer', 'is_external': False, 'member_of': 'timesfm.torch.transformer.Transformer'}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Properties</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ID</th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Path</th>
+      <th>Parent</th>
+      <th>Module</th>
+      <th>OriginModule</th>
+      <th>OriginFile</th>
+      <th>Line</th>
+      <th>EndLine</th>
+      <th>LOC</th>
+      <th>Signature</th>
+      <th>DocSummary</th>
+      <th>ParamNames</th>
+      <th>ParamTypes</th>
+      <th>ReturnType</th>
+      <th>Events</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<h3>External</h3>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th>ID</th>
+      <th>Type</th>
+      <th>Name</th>
+      <th>Path</th>
+      <th>Parent</th>
+      <th>Module</th>
+      <th>OriginModule</th>
+      <th>OriginFile</th>
+      <th>Line</th>
+      <th>EndLine</th>
+      <th>LOC</th>
+      <th>Signature</th>
+      <th>DocSummary</th>
+      <th>ParamNames</th>
+      <th>ParamTypes</th>
+      <th>ReturnType</th>
+      <th>Events</th>
+      <th>Flags</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+<h2>Sample Code</h2>
+<pre><code># TODO: generate_sample_code のシグネチャが違う可能性があります
+# lib_name=timesfm
+</code></pre>
+</body></html>

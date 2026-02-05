@@ -1,0 +1,11 @@
+{
+  "analysis": null,
+  "open_new_tab": true,
+  "color_tables": true,
+  "enable_online_lookup": true,
+  "max_list_items": 5000,
+  "deep_param_inspect": true,
+  "last_selected": {
+    "library": "neuralforecast"
+  }
+}

@@ -1,0 +1,95 @@
+# C:\lib_ana\src\v6\streamlit_app\app.py
+from __future__ import annotations
+
+import streamlit as st
+
+from v6.core.analyzer_service_v6 import list_installed_libraries, analyze_library_with_progress
+from v6.core.session_store_v6 import load_session_state, save_session_state
+
+
+APP_TITLE = "Cognitive Library Explorer V6 (Streamlit)"
+
+
+def _init_state() -> None:
+    st.set_page_config(page_title=APP_TITLE, layout="wide")
+    if "initialized" not in st.session_state:
+        st.session_state.initialized = True
+        st.session_state.analysis = None  # dict(summary, nodes, edges, tables, indexes, classified)
+        st.session_state.active_table = "Modules"
+        st.session_state.open_new_tab = True
+        st.session_state.color_tables = True
+        st.session_state.enable_online_lookup = True
+        st.session_state.last_selected = {}  # library/module/item/member/param/...
+        st.session_state.session_path = r"C:\lib_ana\configs\cle_v6_session.json"
+        # 可能なら前回状態を復元
+        restored = load_session_state(st.session_state.session_path)
+        if restored:
+            for k, v in restored.items():
+                st.session_state[k] = v
+
+
+def main() -> None:
+    _init_state()
+    st.title(APP_TITLE)
+
+    libs = list_installed_libraries()
+
+    with st.sidebar:
+        st.header("Settings")
+        lib_name = st.selectbox(
+            "Library",
+            options=libs,
+            index=libs.index(st.session_state.last_selected.get("library", libs[0])) if libs else 0,
+        )
+
+        st.session_state.open_new_tab = st.checkbox("外部URLを新規タブで開く", value=st.session_state.open_new_tab)
+        st.session_state.color_tables = st.checkbox("表を色分けする", value=st.session_state.color_tables)
+        st.session_state.enable_online_lookup = st.checkbox("PyPI/GitHub/HF をオンライン探索", value=st.session_state.enable_online_lookup)
+
+        col_a, col_b = st.columns(2)
+        analyze_clicked = col_a.button("Analyze", use_container_width=True, type="primary")
+        save_clicked = col_b.button("Save session", use_container_width=True)
+
+        if save_clicked:
+            save_session_state(
+                st.session_state.session_path,
+                {
+                    "analysis": None,  # 大きいので保存しない（必要ならZIP出力側へ）
+                    "active_table": st.session_state.active_table,
+                    "open_new_tab": st.session_state.open_new_tab,
+                    "color_tables": st.session_state.color_tables,
+                    "enable_online_lookup": st.session_state.enable_online_lookup,
+                    "last_selected": {
+                        **st.session_state.last_selected,
+                        "library": lib_name,
+                    },
+                },
+            )
+            st.success("Saved.")
+
+        if analyze_clicked:
+            st.session_state.last_selected["library"] = lib_name
+            st.session_state.analysis = analyze_library_with_progress(lib_name)
+            st.session_state.active_table = "Modules"
+
+    st.markdown(
+        """
+このアプリは **Summary → 表(Modules/Classes/Functions/...) → 行選択でInspector更新** の流れで探索します。  
+左の **Analyze** を押すと解析が走り、進捗バーが出ます。
+"""
+    )
+
+    if st.session_state.analysis is None:
+        st.info("まだ解析結果がありません。サイドバーで Analyze を実行してください。")
+        return
+
+    st.success(f"Loaded: {st.session_state.last_selected.get('library')}")
+
+    # メイン画面（Explorerに集約：ページ分割よりまず動くもの優先）
+    from v6.streamlit_app.ui_explorer_v6 import render_explorer
+
+    render_explorer(st.session_state.analysis)
+
+
+if __name__ == "__main__":
+    main()
