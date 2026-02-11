@@ -1,0 +1,128 @@
+﻿,ID,Parent,Type,Name,Path,Module,Docstring,Params,ReturnType,Role,EventLike,NormName,NameCluster,TopGroup
+106,107,106,method,__init__,timesfm.xreg_lib.BatchedInContextXRegBase.__init__,timesfm.xreg_lib,"Initializes with the exogenous covariate inputs.
+
+Here we use model fitting language to refer to the context as 'train' and
+the horizon as 'test'. We assume batched inputs. To properly format the
+request:
+
+ - `train_lens` represents the contexts in the batch. Targets and all train
+ dynamic covariates should have the same lengths as the corresponding
+ elements
+ in `train_lens`. Notice each `train_len` can be different from the exact
+ length of the corresponding context depending on how much of the context is
+ used for fitting the in-context model.
+ - `test_lens` represents the horizon lengths in the batch. All tesdt
+ dynamic
+ covariates should have the same lengths as the corresponding elements in
+ `test_lens`.
+ - Static covariates should be one for each input.
+ - For train and test dynamic covariates, they should have the same
+ covariate
+ names.
+
+ Pass an empty dict {} for a covariate type if it is not present.
+
+ Example:
+   Here is a set of valid inputs whose schema can be used for reference.
+   ```
+   targets = [
+       [0.0, 0.1, 0.2],
+       [0.0, 0.1, 0.2, 0.3],
+   ]  # Two inputs in this batch.
+   train_lens = [3, 4]
+   test_lens = [2, 5]  # Forecast horizons 2 and 5 respectively.
+   train_dynamic_numerical_covariates = {
+       ""cov_1_dn"": [[0.0, 0.5, 1.0], [0.0, 0.5, 1.0, 1.5]],
+       ""cov_2_dn"": [[0.0, 1.5, 1.0], [0.0, 1.5, 1.0, 2.5]],
+   }  # Each train dynamic covariate has 3 and 4 elements respectively.
+   test_dynamic_numerical_covariates = {
+       ""cov_1_dn"": [[0.1, 0.6], [0.1, 0.6, 1.1, 1.6, 2.4]],
+       ""cov_2_dn"": [[0.1, 1.1], [0.1, 1.6, 1.1, 2.6, 10.0]],
+   }  # Each test dynamic covariate has 2 and 5 elements respectively.
+   train_dynamic_categorical_covariates = {
+       ""cov_1_dc"": [[0, 1, 0], [0, 1, 2, 3]],
+       ""cov_2_dc"": [[""good"", ""bad"", ""good""], [""good"", ""good"", ""bad"",
+       ""bad""]],
+   }
+   test_dynamic_categorical_covariates = {
+       ""cov_1_dc"": [[1, 0], [1, 0, 2, 3, 1]],
+       ""cov_2_dc"": [[""bad"", ""good""], [""bad"", ""bad"", ""bad"", ""bad"", ""bad""]],
+   }
+   static_numerical_covariates = {
+       ""cov_1_sn"": [0.0, 3.0],
+       ""cov_2_sn"": [2.0, 1.0],
+       ""cov_3_sn"": [1.0, 2.0],
+   }  # Each static covariate has 1 element for each input.
+   static_categorical_covariates = {
+       ""cov_1_sc"": [""apple"", ""orange""],
+       ""cov_2_sc"": [2, 3],
+   }
+   ```
+
+Args:
+  targets: List of targets (responses) of the in-context regression.
+  train_lens: List of lengths of each target vector from the context.
+  test_lens: List of lengths of each forecast horizon.
+  train_dynamic_numerical_covariates: Dict of covariate names mapping to the
+    dynamic numerical covariates of each forecast task on the context. Their
+    lengths should match the corresponding lengths in `train_lens`.
+  train_dynamic_categorical_covariates: Dict of covariate names mapping to
+    the dynamic categorical covariates of each forecast task on the context.
+    Their lengths should match the corresponding lengths in `train_lens`.
+  test_dynamic_numerical_covariates: Dict of covariate names mapping to the
+    dynamic numerical covariates of each forecast task on the horizon. Their
+    lengths should match the corresponding lengths in `test_lens`.
+  test_dynamic_categorical_covariates: Dict of covariate names mapping to
+    the dynamic categorical covariates of each forecast task on the horizon.
+    Their lengths should match the corresponding lengths in `test_lens`.
+  static_numerical_covariates: Dict of covariate names mapping to the static
+    numerical covariates of each forecast task.
+  static_categorical_covariates: Dict of covariate names mapping to the
+    static categorical covariates of each forecast task.","[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]",None,other,false,init,0,timesfm.xreg_lib
+107,108,106,method,_assert_covariates,timesfm.xreg_lib.BatchedInContextXRegBase._assert_covariates,timesfm.xreg_lib,Verifies the validity of the covariate inputs.,"[object Object],[object Object]",None,other,false,assert_covariates,29,timesfm.xreg_lib
+108,109,106,method,create_covariate_matrix,timesfm.xreg_lib.BatchedInContextXRegBase.create_covariate_matrix,timesfm.xreg_lib,"Creates target vector and covariate matrices for in context regression.
+
+Here we use model fitting language to refer to the context as 'train' and
+the horizon as 'test'.
+
+Args:
+  one_hot_encoder_drop: Which drop strategy to use for the one hot encoder.
+  use_intercept: Whether to prepare an intercept (all 1) column in the
+    matrices.
+  assert_covariates: Whether to assert the validity of the covariate inputs.
+  assert_covariate_shapes: Whether to assert the shapes of the covariate
+    inputs when `assert_covariates` is True.
+
+Returns:
+  A tuple of the target vector, the covariate matrix for the context, and
+  the covariate matrix for the horizon.","[object Object],[object Object],[object Object],[object Object],[object Object]","tuple[np.ndarray, np.ndarray, np.ndarray]",other,false,create_covariate_matrix,30,timesfm.xreg_lib
+109,110,106,method,fit,timesfm.xreg_lib.BatchedInContextXRegBase.fit,timesfm.xreg_lib,,[object Object],Any,model_fit,false,fit,31,timesfm.xreg_lib
+111,112,111,method,fit,timesfm.xreg_lib.BatchedInContextXRegLinear.fit,timesfm.xreg_lib,"Fits a linear model for in-context regression.
+
+Args:
+  ridge: A non-negative value for specifying the ridge regression penalty.
+    If 0 is provided, fallback to ordinary least squares. Note this penalty
+    is added to the normalized covariate matrix.
+  one_hot_encoder_drop: Which drop strategy to use for the one hot encoder.
+  use_intercept: Whether to prepare an intercept (all 1) column in the
+    matrices.
+  force_on_cpu: Whether to force execution on cpu for accelerator machines.
+  max_rows_per_col: How many rows to subsample per column. 0 for no
+    subsampling. This is for speeding up model fitting.
+  max_rows_per_col_sample_seed: The seed for the subsampling if needed by
+    `max_rows_per_col`.
+  debug_info: Whether to return debug info.
+  assert_covariates: Whether to assert the validity of the covariate inputs.
+  assert_covariate_shapes: Whether to assert the shapes of the covariate
+    inputs when `assert_covariates` is True.
+
+Returns:
+  If `debug_info` is False:
+    The linear fits on the horizon.
+  If `debug_info` is True:
+    A tuple of:
+    - the linear fits on the horizon,
+    - the linear fits on the context,
+    - the flattened target vector,
+    - the covariate matrix for the context, and
+    - the covariate matrix for the horizon.","[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]","list[np.ndarray] | tuple[list[np.ndarray], list[np.ndarray], jax.Array, jax.Array, jax.Array]",model_fit,false,fit,31,timesfm.xreg_lib
