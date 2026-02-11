@@ -1,0 +1,10 @@
+{
+  "libraries": [
+    "numpy",
+    "pandas",
+    "scipy",
+    "absl-py",
+    "timesfm",
+    "ai4ts"
+  ]
+}

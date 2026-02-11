@@ -1,7 +1,11 @@
 # ファイルパス: C:\lib_ana\src\v6\streamlit_app\ui_explorer_v6.py
 from __future__ import annotations
 
+import json
+import html
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -10,7 +14,6 @@ import streamlit.components.v1 as components
 import plotly.express as px
 import plotly.graph_objects as go
 
-from v6.core.hierarchy_v6 import build_options, auto_depth
 from v6.core.param_map_v6 import build_param_reverse_index
 from v6.core.link_resolver_v6 import (
     lookup_pypi_urls,
@@ -39,6 +42,27 @@ TYPE_COLOR = {
     "external": "#fdf2f8",
 }
 
+def _load_library_filter(path_text: str) -> list[str]:
+    p = Path(path_text)
+    if not p.exists():
+        return []
+    try:
+        payload = json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        return []
+    libs = payload.get("libraries", []) if isinstance(payload, dict) else []
+    if not isinstance(libs, list):
+        return []
+    out: List[str] = []
+    seen = set()
+    for x in libs:
+        s = str(x).strip()
+        if not s or s in seen:
+            continue
+        seen.add(s)
+        out.append(s)
+    return out
+
 
 def _style_by_type(df: pd.DataFrame) -> "pd.io.formats.style.Styler":
     if df is None or df.empty or "Type" not in df.columns:
@@ -52,14 +76,55 @@ def _style_by_type(df: pd.DataFrame) -> "pd.io.formats.style.Styler":
     return df.style.apply(_row_style, axis=1)
 
 
-def _render_df(df: pd.DataFrame, *, color_tables: bool, height: int = 360) -> None:
+def _render_df(
+    df: pd.DataFrame,
+    *,
+    color_tables: bool,
+    height: int = 360,
+    context_label: str = "",
+    scope_prefix: str = "",
+    key_tag: str = "",
+) -> None:
     if df is None or df.empty:
         st.info("データがありません。")
         return
     if color_tables and "Type" in df.columns:
-        st.dataframe(_style_by_type(df), use_container_width=True, height=height)
+        st.dataframe(_style_by_type(df), width="stretch", height=height)
     else:
-        st.dataframe(df, use_container_width=True, height=height)
+        st.dataframe(df, width="stretch", height=height)
+
+    # Copy / Download
+    lib = str(st.session_state.get("current_lib") or "library")
+    nav_prefix = str(st.session_state.get("nav_prefix") or "")
+    effective_prefix = scope_prefix or nav_prefix or "all"
+    prefix = effective_prefix.replace(".", "_")
+    label = context_label.replace(" ", "_") if context_label else "table"
+    safe = lambda s: s.replace("/", "_").replace("\\", "_").replace(":", "_")
+    file_base = f"{safe(lib)}_{safe(prefix)}_{safe(label)}"
+    key_base = f"{file_base}::{safe(key_tag or scope_prefix or label)}"
+    widget_key = f"{key_base}::{id(df)}"
+
+    with st.expander("Copy / Download", expanded=False):
+        fmt = st.selectbox(
+            "形式",
+            ["text", "csv", "json"],
+            index=1,
+            key=f"copy_fmt::{widget_key}",
+        )
+        if fmt == "json":
+            payload = df.to_json(orient="records", force_ascii=False, indent=2)
+        elif fmt == "csv":
+            payload = df.to_csv(index=False)
+        else:
+            payload = df.to_string(index=False)
+        st.code(payload, language="text")
+        st.download_button(
+            "Download table (.csv)",
+            data=df.to_csv(index=False),
+            file_name=f"{file_base}.csv",
+            mime="text/csv",
+            key=f"dl::{widget_key}",
+        )
 
 
 def _filter_nodes_by_prefix(nodes: pd.DataFrame, prefix: str) -> pd.DataFrame:
@@ -203,7 +268,7 @@ def _render_param_overlap_table(
     if len(df) > max_items:
         df = df.head(max_items)
 
-    _render_df(df, color_tables=False, height=320)
+    _render_df(df, color_tables=False, height=320, context_label="ParamOverlap", scope_prefix=scope_prefix, key_tag="ParamOverlap")
 
 def _render_mermaid(code: str, *, height: int = 620) -> None:
     """Mermaid を Streamlit 内でレンダリングする（外部CDN使用）。"""
@@ -281,6 +346,7 @@ def _render_scope_tables(
     prefix: str,
     color_tables: bool,
     max_items: int,
+    scope_label: str = "",
 ) -> None:
     """prefixでスコープを切って、Modules/Classes/Functions/... を“必ず”縦に展開表示する。
     - データがあるものは expanded=True
@@ -323,7 +389,14 @@ def _render_scope_tables(
         dfk = tbl.get(k, pd.DataFrame())
         expanded = (dfk is not None and not dfk.empty)
         with st.expander(k, expanded=expanded):
-            _render_df(dfk, color_tables=color_tables, height=260)
+            _render_df(
+                dfk,
+                color_tables=color_tables,
+                height=260,
+                context_label=k,
+                scope_prefix=prefix,
+                key_tag=f"{scope_label}::{k}",
+            )
 
 def _render_navigator(
     analysis: Dict[str, Any],
@@ -334,7 +407,7 @@ def _render_navigator(
     nodes: pd.DataFrame = analysis.get("nodes", pd.DataFrame())
     errors: pd.DataFrame = analysis.get("errors", pd.DataFrame())
 
-    st.subheader("🧭 Navigator（段階的カスケード＋Inspector＋一覧表）")
+    st.subheader("🧭 Navigator（Modules → Classes → Functions → Methods/Props → External）")
     if nodes is None or nodes.empty or "Type" not in nodes.columns:
         st.info("解析結果がありません。")
         return
@@ -350,76 +423,28 @@ def _render_navigator(
         df_mod = df_mod.drop_duplicates(subset=["Path"], keep="first").copy()
     module_paths = df_mod["Path"].astype(str).tolist()
 
-    inline_tables = st.checkbox("選択の直下に一覧表を自動表示（重い場合はOFF）", value=True, key="inline_tables")
-
-    col1, col2, col3 = st.columns([1, 1, 2])
-    with col1:
-        auto = st.checkbox("Auto depth", value=True)
-    with col2:
-        min_depth = st.slider("Min depth", 1, 10, 2)
-    with col3:
-        max_depth = st.slider("Max depth", 1, 15, 8)
-
-    depth = auto_depth(module_paths, max_depth=max_depth, min_depth=min_depth) if auto else max_depth
-    st.caption(f"例: timesfm → flax → dense ...（depth={depth}）")
-
-    selected_levels: List[str] = []
-    for lvl in range(depth):
-        opts, _ = build_options(module_paths, selected_levels)
-        if not opts:
-            break
-
-        csel, cnum = st.columns([8, 2])
-        with csel:
-            pick = st.selectbox(
-                f"Level {lvl+1}",
-                options=["(stop)"] + opts,
-                index=0,
-                key=f"lvl_{lvl}",
-            )
-        with cnum:
-            st.markdown(f"**{len(opts)}件**")
-
-        if pick == "(stop)":
-            break
-        selected_levels.append(pick)
-
-        if inline_tables:
-            st.markdown(f"###### Scope（Level {lvl+1}: `{'.'.join(selected_levels)}`）")
-            _render_scope_tables(nodes, errors, prefix=".".join(selected_levels), color_tables=color_tables, max_items=max_items)
-
-    prefix = ".".join(selected_levels)
-    st.session_state["nav_prefix"] = prefix
-
-    filtered_mods = [m for m in module_paths if m.startswith(prefix)] if prefix else module_paths
-    q = st.text_input(
-        "Modules filter（部分一致/手入力）",
-        value="",
-        placeholder="例: common._base_auto / plotting / util ...",
-        key="mod_q",
+    st.markdown("#### Modules")
+    _render_df(
+        df_mod.head(max_items),
+        color_tables=color_tables,
+        height=260,
+        context_label="Modules",
+        scope_prefix="modules",
+        key_tag="Navigator::ModulesTable",
     )
-    if q.strip():
-        qq = q.strip().lower()
-        filtered_mods = [m for m in filtered_mods if qq in m.lower()]
+    mod_q = st.text_input("Modules filter（部分一致）", value="", placeholder="例: numpy.linalg", key="mod_q")
+    filtered_mods = module_paths
+    if mod_q.strip():
+        qq = mod_q.strip().lower()
+        filtered_mods = [m for m in module_paths if qq in m.lower()]
     if len(filtered_mods) > max_items:
-        st.warning(f"候補が多いので先頭 {max_items} 件に制限しました（Settingsで変更可）")
         filtered_mods = filtered_mods[:max_items]
-
-    default_idx = 0
-    if prefix and prefix in filtered_mods:
-        default_idx = filtered_mods.index(prefix)
-
-    cm, cn = st.columns([8, 2])
-    with cm:
-        module_sel = st.selectbox("Modules", options=filtered_mods, index=default_idx, key="module_sel")
-    with cn:
-        st.markdown(f"**{len(filtered_mods)}件**")
-
+    default_mod_idx = 0
+    if st.session_state.get("nav_module") in filtered_mods:
+        default_mod_idx = filtered_mods.index(str(st.session_state.get("nav_module")))
+    module_sel = st.selectbox("Modules", options=filtered_mods, index=default_mod_idx, key="module_sel")
     st.session_state["nav_module"] = module_sel
-
-    if inline_tables:
-        st.markdown(f"###### Scope（Module: `{module_sel}`）")
-        _render_scope_tables(nodes, errors, prefix=module_sel, color_tables=color_tables, max_items=max_items)
+    st.session_state["nav_prefix"] = module_sel
 
     mod_row = df_mod[df_mod["Path"].astype(str) == str(module_sel)].head(1)
     if mod_row.empty:
@@ -427,88 +452,96 @@ def _render_navigator(
         return
     mod_id = str(mod_row.iloc[0].get("ID", ""))
 
-    df_items = nodes[(nodes["Parent"].astype(str) == mod_id) & (nodes["Type"].isin(["class", "function", "external"]))].copy()
-    if df_items.empty:
-        st.caption("Items なし")
-        return
+    def _mk_label(df: pd.DataFrame) -> pd.DataFrame:
+        if df is None:
+            return pd.DataFrame(columns=["LabelBase", "Label"])
+        if df.empty:
+            out_df = df.copy()
+            if "LabelBase" not in out_df.columns:
+                out_df["LabelBase"] = pd.Series(dtype="object")
+            if "Label" not in out_df.columns:
+                out_df["Label"] = pd.Series(dtype="object")
+            return out_df
+        base_col = "Path" if "Path" in df.columns else "Name"
+        out_df = df.copy()
+        out_df["LabelBase"] = out_df["Type"].astype(str) + ": " + out_df[base_col].astype(str)
+        if dedupe_ui:
+            g = out_df.groupby("LabelBase", dropna=False).size().reset_index(name="_dup")
+            first = out_df.drop_duplicates(subset=["LabelBase"], keep="first").copy()
+            first = first.merge(g, on="LabelBase", how="left")
+            first["Label"] = first["LabelBase"] + first["_dup"].apply(lambda n: f" (×{int(n)})" if int(n) > 1 else "")
+            return first.drop(columns=["_dup"]).sort_values(["Type", "LabelBase"])
+        out_df["Label"] = out_df["LabelBase"]
+        return out_df.sort_values(["Type", "LabelBase"])
 
-    # UIは Path を優先して表示（同名が多いので可読性↑）
-    base_col = "Path" if "Path" in df_items.columns else "Name"
-    df_items["LabelBase"] = df_items["Type"].astype(str) + ": " + df_items[base_col].astype(str)
-    if dedupe_ui:
-        g = df_items.groupby("LabelBase", dropna=False).size().reset_index(name="_dup")
-        first = df_items.drop_duplicates(subset=["LabelBase"], keep="first").copy()
-        first = first.merge(g, on="LabelBase", how="left")
-        first["Label"] = first["LabelBase"] + first["_dup"].apply(lambda n: f" (×{int(n)})" if int(n) > 1 else "")
-        df_items = first.drop(columns=["_dup"])
-    else:
-        df_items["Label"] = df_items["LabelBase"]
-    df_items = df_items.sort_values(["Type", "LabelBase"])
+    scoped = nodes[nodes["Parent"].astype(str) == mod_id].copy()
+    df_classes = _mk_label(scoped[scoped["Type"] == "class"].copy())
+    df_functions = _mk_label(scoped[scoped["Type"] == "function"].copy())
+    df_external = _mk_label(scoped[scoped["Type"] == "external"].copy())
 
-    item_q = st.text_input("Items filter（部分一致/手入力）", value="", placeholder="例: BaseAuto / heatmap / sobol ...", key="item_q")
-    labels = df_items["Label"].tolist()
-    if item_q.strip():
-        qq = item_q.strip().lower()
-        labels = [x for x in labels if qq in x.lower()]
-    if len(labels) > max_items:
-        labels = labels[:max_items]
+    st.markdown("#### Classes")
+    _render_df(
+        df_classes.head(max_items),
+        color_tables=color_tables,
+        height=260,
+        context_label="Classes",
+        scope_prefix=module_sel,
+        key_tag="Navigator::ClassesTable",
+    )
+    class_labels = ["(skip)"] + df_classes["Label"].tolist()[:max_items]
+    class_sel = st.selectbox("Classes", options=class_labels, index=0, key="class_sel")
+    class_row = df_classes[df_classes["Label"] == class_sel].head(1) if class_sel != "(skip)" else pd.DataFrame()
+    class_id = str(class_row.iloc[0].get("ID", "")) if not class_row.empty else ""
 
-    ci, cin = st.columns([8, 2])
-    with ci:
-        item_sel = st.selectbox("Items（class/function/external）", options=labels, index=0, key="item_sel")
-    with cin:
-        st.markdown(f"**{len(labels)}件**")
+    st.markdown("#### Functions")
+    _render_df(
+        df_functions.head(max_items),
+        color_tables=color_tables,
+        height=260,
+        context_label="Functions",
+        scope_prefix=module_sel,
+        key_tag="Navigator::FunctionsTable",
+    )
+    fn_labels = ["(skip)"] + df_functions["Label"].tolist()[:max_items]
+    fn_sel = st.selectbox("Functions", options=fn_labels, index=0, key="function_sel")
+    fn_row = df_functions[df_functions["Label"] == fn_sel].head(1) if fn_sel != "(skip)" else pd.DataFrame()
+    fn_id = str(fn_row.iloc[0].get("ID", "")) if not fn_row.empty else ""
 
-    item_row = df_items[df_items["Label"] == item_sel].head(1)
-    node_id = str(item_row.iloc[0].get("ID", "")) if not item_row.empty else ""
-    node_type = str(item_row.iloc[0].get("Type", "")) if not item_row.empty else ""
+    st.markdown("#### External")
+    _render_df(
+        df_external.head(max_items),
+        color_tables=color_tables,
+        height=260,
+        context_label="External",
+        scope_prefix=module_sel,
+        key_tag="Navigator::ExternalTable",
+    )
+    ex_labels = ["(skip)"] + df_external["Label"].tolist()[:max_items]
+    ex_sel = st.selectbox("External", options=ex_labels, index=0, key="external_sel")
+    ex_row = df_external[df_external["Label"] == ex_sel].head(1) if ex_sel != "(skip)" else pd.DataFrame()
+    ex_id = str(ex_row.iloc[0].get("ID", "")) if not ex_row.empty else ""
 
-    if inline_tables:
-        item_path = str(item_row.iloc[0].get("Path") or "") if not item_row.empty else ""
-        if item_path:
-            st.markdown(f"###### Scope（Item: `{item_path}`）")
-            _render_scope_tables(nodes, errors, prefix=item_path, color_tables=color_tables, max_items=max_items)
+    methods_owner_row = class_row if not class_row.empty else ex_row
+    methods_owner_id = class_id or ex_id
+    member_id = ""
+    if methods_owner_id:
+        df_mem = nodes[(nodes["Parent"].astype(str) == methods_owner_id) & (nodes["Type"].isin(["method", "property"]))].copy()
+        df_mem = _mk_label(df_mem)
+        st.markdown("#### Methods/Props")
+        _render_df(
+            df_mem.head(max_items),
+            color_tables=color_tables,
+            height=260,
+            context_label="Methods/Props",
+            scope_prefix=str(methods_owner_row.iloc[0].get("Path") or module_sel) if not methods_owner_row.empty else module_sel,
+            key_tag="Navigator::MethodsPropsTable",
+        )
+        mem_labels = ["(skip)"] + df_mem["Label"].tolist()[:max_items]
+        mem_sel = st.selectbox("Methods/Props", options=mem_labels, index=0, key="mem_sel")
+        mem_row = df_mem[df_mem["Label"] == mem_sel].head(1) if mem_sel != "(skip)" else pd.DataFrame()
+        member_id = str(mem_row.iloc[0].get("ID", "")) if not mem_row.empty else ""
 
-    member_id = None
-    if node_type in {"class", "external"}:
-        df_mem = nodes[(nodes["Parent"].astype(str) == node_id) & (nodes["Type"].isin(["method", "property"]))].copy()
-        if not df_mem.empty:
-            base_col_m = "Path" if "Path" in df_mem.columns else "Name"
-            df_mem["LabelBase"] = df_mem["Type"].astype(str) + ": " + df_mem[base_col_m].astype(str)
-            if dedupe_ui:
-                g2 = df_mem.groupby("LabelBase", dropna=False).size().reset_index(name="_dup")
-                first2 = df_mem.drop_duplicates(subset=["LabelBase"], keep="first").copy()
-                first2 = first2.merge(g2, on="LabelBase", how="left")
-                first2["Label"] = first2["LabelBase"] + first2["_dup"].apply(lambda n: f" (×{int(n)})" if int(n) > 1 else "")
-                df_mem = first2.drop(columns=["_dup"])
-            else:
-                df_mem["Label"] = df_mem["LabelBase"]
-            df_mem = df_mem.sort_values(["Type", "LabelBase"])
-            mem_labels = df_mem["Label"].tolist()
-
-            mem_q = st.text_input("Members filter（部分一致）", value="", placeholder="例: fit / plot / to_ ...", key="mem_q")
-            if mem_q.strip():
-                qq = mem_q.strip().lower()
-                mem_labels = [x for x in mem_labels if qq in x.lower()]
-            if len(mem_labels) > max_items:
-                mem_labels = mem_labels[:max_items]
-
-            cmem, cmemn = st.columns([8, 2])
-            with cmem:
-                mem_sel = st.selectbox("Members（method/property）", options=mem_labels, index=0, key="mem_sel")
-            with cmemn:
-                st.markdown(f"**{len(mem_labels)}件**")
-
-            member_row = df_mem[df_mem["Label"] == mem_sel].head(1)
-            member_id = str(member_row.iloc[0].get("ID", "")) if not member_row.empty else ""
-
-            if inline_tables:
-                mem_path = str(member_row.iloc[0].get("Path") or "") if not member_row.empty else ""
-                if mem_path:
-                    st.markdown(f"###### Scope（Member: `{mem_path}`）")
-                    _render_scope_tables(nodes, errors, prefix=mem_path, color_tables=color_tables, max_items=max_items)
-
-    target_id = member_id or node_id
+    target_id = member_id or class_id or fn_id or ex_id or mod_id
     st.session_state["nav_target_id"] = target_id
 
     trow = nodes[nodes["ID"].astype(str) == str(target_id)].head(1)
@@ -520,7 +553,7 @@ def _render_navigator(
     st.write(obj)
 
     st.divider()
-    selected_ids = [x for x in [mod_id, node_id, member_id] if x]
+    selected_ids = [x for x in [mod_id, class_id, fn_id, ex_id, member_id] if x]
     _render_param_overlap_table(
         nodes,
         scope_prefix=module_sel,
@@ -530,8 +563,20 @@ def _render_navigator(
     )
 
     st.divider()
-    st.markdown("### 選択スコープの一覧表（Moduleスコープ）")
-    _render_scope_tables(nodes, errors, prefix=module_sel, color_tables=color_tables, max_items=max_items)
+    with st.expander("全体の一覧表（All scope）", expanded=False):
+        all_df = nodes.copy()
+        if dedupe_ui and not all_df.empty:
+            subset = [c for c in ["Type", "Path", "Module", "Name"] if c in all_df.columns]
+            if subset:
+                all_df = all_df.drop_duplicates(subset=subset, keep="first").copy()
+        _render_df(
+            all_df.head(max_items),
+            color_tables=color_tables,
+            height=360,
+            context_label="AllNodes",
+            scope_prefix="all",
+            key_tag="Navigator::AllNodes",
+        )
 
     st.divider()
     st.markdown("### 🧾 Codegen（選択APIを“引数全部入り”でコード化）")
@@ -543,6 +588,7 @@ def _render_navigator(
         data=code,
         file_name=f"{(tpath or 'call').replace('.', '_')}_call_stub.py",
         mime="text/x-python",
+        key=f"dl::call_stub::{target_id or 'none'}",
     )
 
 def _render_visualize(analysis: Dict[str, Any]) -> None:
@@ -568,7 +614,7 @@ def _render_visualize(analysis: Dict[str, Any]) -> None:
     mmd = mermaid_flowchart(nodes, edges, prefix=prefix, direction=direction, max_nodes=max_nodes, max_edges=max_edges)
     st.code(mmd, language="text")
     _render_mermaid(mmd, height=620)
-    st.download_button("Download Mermaid (.mmd)", data=mmd, file_name="graph.mmd", mime="text/plain")
+    st.download_button("Download Mermaid (.mmd)", data=mmd, file_name="graph.mmd", mime="text/plain", key="dl::mermaid_graph")
 
     st.divider()
     st.markdown("### Mermaid（sequenceDiagram）")
@@ -583,7 +629,7 @@ def _render_visualize(analysis: Dict[str, Any]) -> None:
     seq = mermaid_sequence(nodes, edges, start_id=start_id, depth=depth, max_steps=50)
     st.code(seq, language="text")
     _render_mermaid(seq, height=520)
-    st.download_button("Download Sequence (.mmd)", data=seq, file_name="sequence.mmd", mime="text/plain")
+    st.download_button("Download Sequence (.mmd)", data=seq, file_name="sequence.mmd", mime="text/plain", key="dl::mermaid_seq")
 
     st.divider()
     st.markdown("### Sunburst（階層の俯瞰）")
@@ -593,7 +639,7 @@ def _render_visualize(analysis: Dict[str, Any]) -> None:
     else:
         # ids/parents 形式（内部ノードも含む）で描画：path=... の leaf 制約を回避
         fig = px.sunburst(sb, ids="id", names="label", parents="parent", values="count", branchvalues="total")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     st.divider()
     st.markdown("### Network（依存/呼び出しグラフ）")
@@ -602,7 +648,7 @@ def _render_visualize(analysis: Dict[str, Any]) -> None:
     if fig2 is None:
         st.info("Networkの生成に失敗しました（networkx未インストール、またはデータ不足）。")
     else:
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
 
     st.divider()
     st.markdown("### Call Graph（AST / 推定）")
@@ -614,7 +660,7 @@ def _render_visualize(analysis: Dict[str, Any]) -> None:
         if fig3 is None:
             st.info("Call Graphの生成に失敗しました（networkx未インストール、またはデータ不足）。")
         else:
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width="stretch")
 
 def _render_summary(analysis: Dict[str, Any], *, color_tables: bool) -> None:
     lib = analysis.get("library", "")
@@ -634,13 +680,16 @@ def _render_summary(analysis: Dict[str, Any], *, color_tables: bool) -> None:
         "Errors",
     ]
     rows = [{"Metric": k, "Value": summary.get(k, 0)} for k in preferred]
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, height=260)
+    _render_df(pd.DataFrame(rows), color_tables=False, height=260, context_label="Summary", key_tag="Summary")
 
-    metric = st.radio("表を表示（クリック相当）", ["Modules", "Classes", "Functions", "Methods", "External", "Errors"], horizontal=True)
+    metric = st.radio("表を表示（クリック相当）", ["Modules", "Classes", "Functions", "Methods/Props", "External", "Errors"], horizontal=True)
     if metric == "Errors":
-        _render_df(errors, color_tables=color_tables)
+        _render_df(errors, color_tables=color_tables, context_label="Errors", scope_prefix="summary", key_tag="SummaryErrors")
     else:
-        _render_df(tables.get(metric, pd.DataFrame()), color_tables=color_tables)
+        src_df = tables.get(metric, pd.DataFrame())
+        if src_df is None or src_df.empty:
+            src_df = tables.get("Methods", pd.DataFrame()) if metric == "Methods/Props" else src_df
+        _render_df(src_df, color_tables=color_tables, context_label=metric, scope_prefix="summary", key_tag=f"Summary{metric}")
 
 
 def _render_param_reverse(analysis: Dict[str, Any]) -> None:
@@ -654,7 +703,7 @@ def _render_param_reverse(analysis: Dict[str, Any]) -> None:
         return
 
     st.caption("一意引数一覧（頻度順）")
-    st.dataframe(df_over.head(300), use_container_width=True, height=320)
+    _render_df(df_over.head(300), color_tables=False, height=320, context_label="ParamOverview", scope_prefix="params", key_tag="ParamOverview")
 
     df_idx, rev = build_param_reverse_index(df_map)
     q = st.text_input("引数名で検索（部分一致）", value="", placeholder="例: alpha / seed / X / lr …")
@@ -662,11 +711,11 @@ def _render_param_reverse(analysis: Dict[str, Any]) -> None:
     chosen = st.selectbox("ParamName", options=candidates) if candidates else None
     if chosen:
         st.markdown(f"#### 使用箇所 — `{chosen}`")
-        st.dataframe(pd.DataFrame({"API": rev.get(chosen, [])}), use_container_width=True, height=360)
+        _render_df(pd.DataFrame({"API": rev.get(chosen, [])}), color_tables=False, height=360, context_label=f"Param-{chosen}", scope_prefix="params", key_tag=f"Param-{chosen}")
 
     st.divider()
     st.markdown("#### 引数対応表（ParamMap）")
-    st.dataframe(df_map.head(800), use_container_width=True, height=360)
+    _render_df(df_map.head(800), color_tables=False, height=360, context_label="ParamMap", scope_prefix="params", key_tag="ParamMap")
 
 
 def _render_search(analysis: Dict[str, Any], *, color_tables: bool, max_items: int) -> None:
@@ -710,7 +759,7 @@ def _render_search(analysis: Dict[str, Any], *, color_tables: bool, max_items: i
         return
 
     show_cols = [c for c in ["Score", "Type", "Path", "Name", "Module"] if c in df.columns]
-    st.dataframe(df[show_cols].head(min(200, len(df))), use_container_width=True, height=320)
+    _render_df(df[show_cols].head(min(200, len(df))), color_tables=color_tables, height=320, context_label="SearchResults", scope_prefix=scope_prefix, key_tag="SearchResults")
 
     # 1件選択して深掘り
     if "Path" not in df.columns or df["Path"].dropna().empty:
@@ -735,7 +784,7 @@ def _render_search(analysis: Dict[str, Any], *, color_tables: bool, max_items: i
     st.write(obj)
 
     st.markdown(f"###### Scope（Search pick: `{pick}`）")
-    _render_scope_tables(nodes, errors, prefix=pick, color_tables=color_tables, max_items=max_items)
+    _render_scope_tables(nodes, errors, prefix=pick, color_tables=color_tables, max_items=max_items, scope_label="SearchPick")
 
     st.divider()
     st.markdown("### 🧾 Codegen（検索で選んだAPI）")
@@ -757,16 +806,18 @@ def _render_search(analysis: Dict[str, Any], *, color_tables: bool, max_items: i
     if neigh.empty:
         st.info("このAPIの近傍エッジが見つかりません。")
         return
-    _render_df(neigh.head(200), color_tables=False, height=260)
+    _render_df(neigh.head(200), color_tables=False, height=260, context_label="CallGraphNeighbors", scope_prefix=pick, key_tag="CallGraphNeighbors")
 
 def _render_tables(analysis: Dict[str, Any], *, color_tables: bool) -> None:
     st.subheader("📚 一覧表（分類フィルタ付き）")
     nodes: pd.DataFrame = analysis.get("nodes", pd.DataFrame())
     tables: Dict[str, pd.DataFrame] = analysis.get("tables", {}) or {}
 
-    choice = st.selectbox("表示する表", ["Modules", "Classes", "Functions", "Methods", "External"], index=0)
+    choice = st.selectbox("表示する表", ["Modules", "Classes", "Functions", "Methods/Props", "External"], index=0)
     df = tables.get(choice, pd.DataFrame()).copy()
-    _render_df(df, color_tables=color_tables, height=380)
+    if (df is None or df.empty) and choice == "Methods/Props":
+        df = tables.get("Methods", pd.DataFrame()).copy()
+    _render_df(df, color_tables=color_tables, height=380, context_label=choice, scope_prefix="tables", key_tag=f"Tables-{choice}")
 
     if nodes is not None and not nodes.empty and "Role" in nodes.columns:
         st.markdown("#### 分類フィルタ")
@@ -778,7 +829,7 @@ def _render_tables(analysis: Dict[str, Any], *, color_tables: bool) -> None:
             df2 = df2[df2["Role"] == role]
         if not df2.empty and ev != "(all)" and "EventLike" in df2.columns:
             df2 = df2[df2["EventLike"].astype(bool) == (ev == "True")]
-        _render_df(df2, color_tables=color_tables, height=380)
+        _render_df(df2, color_tables=color_tables, height=380, context_label=f"{choice}_filtered", scope_prefix="tables", key_tag=f"Tables-{choice}-filtered")
 
 
 def _render_links(analysis: Dict[str, Any], *, open_new_tab: bool, enable_online_lookup: bool) -> None:
@@ -827,7 +878,17 @@ def _render_library_atlas(current_lib: str) -> None:
 
     from v6.core.analyzer_service_v6 import list_installed_libraries, analyze_library_with_progress
 
-    libs = list_installed_libraries(limit=2000)
+    all_libs = list_installed_libraries(limit=2000)
+    mode = str(st.session_state.get("library_scope_mode", "全選択"))
+    cfg_path = str(st.session_state.get("library_filter_config_path", "configs/library_filter.json"))
+    cfg_libs = _load_library_filter(cfg_path)
+    libs = all_libs
+    if mode == "configのみ":
+        cfg_set = set(cfg_libs)
+        libs = [x for x in all_libs if x in cfg_set]
+        if not libs:
+            st.warning("configモードですが表示可能なライブラリがありません。configファイルを確認してください。")
+
     default = [current_lib] if current_lib in libs else ([] if not libs else [libs[0]])
     selected = st.multiselect("Libraries", options=libs, default=default)
     deep = st.checkbox("Deep param inspect", value=False)
@@ -862,32 +923,188 @@ def _render_library_atlas(current_lib: str) -> None:
 
         st.markdown("### メトリクス")
         dfm = pd.DataFrame(rows).sort_values("Library")
-        st.dataframe(dfm, use_container_width=True, height=320)
-
-st.divider()
-st.markdown("### semantic cluster（作業仮説：共通機能の塊）")
-st.caption("TF-IDF(文字n-gram) + MiniBatchKMeans による軽量クラスタリング。大規模ライブラリは重いので対象を絞ってください。")
-do_cluster = st.checkbox("クラスタリングを実行する", value=False)
-if do_cluster:
-    from v6.core.atlas_features_v6 import build_atlas_table, cluster_nodes_semantic
-    # 代表として current_lib だけ表示（複数は重くなりがち）
-    name = current_lib
-    a = _analyze_one(name, deep)
-    df_nodes = a.get("nodes", pd.DataFrame())
-    atlas_df = build_atlas_table(df_nodes)
-    cdf, top_terms = cluster_nodes_semantic(atlas_df, n_clusters=10)
-    show = [c for c in ["Cluster","Type","Path","ParamCount","NameCluster","Role"] if c in cdf.columns]
-    st.dataframe(cdf[show].head(300), use_container_width=True, height=360)
-    if top_terms:
-        st.markdown("#### クラスタ別：代表n-gram（雰囲気）")
-        rows = [{"Cluster": k, "TopTerms": ", ".join(v)} for k, v in sorted(top_terms.items())]
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, height=260)
-
+        _render_df(dfm, color_tables=False, height=320, context_label="AtlasMetrics", scope_prefix="atlas", key_tag="AtlasMetrics")
         st.markdown("### 共有されやすい引数（Top）")
         if param_rows:
             dfp = pd.DataFrame(param_rows)
             fig = px.bar(dfp, x="ParamName", y="Count", color="Library")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
+
+    st.divider()
+    st.markdown("### semantic cluster（作業仮説：共通機能の塊）")
+    st.caption("TF-IDF(文字n-gram) + MiniBatchKMeans による軽量クラスタリング。大規模ライブラリは重いので対象を絞ってください。")
+    do_cluster = st.checkbox("クラスタリングを実行する", value=False)
+    if do_cluster:
+        from v6.core.atlas_features_v6 import build_atlas_table, cluster_nodes_semantic
+
+        # 代表として current_lib だけ表示（複数は重くなりがち）
+        name = current_lib
+        if not name:
+            st.info("現在のLibraryが未選択です。")
+            return
+        a = _analyze_one(name, deep)
+        df_nodes = a.get("nodes", pd.DataFrame())
+        atlas_df = build_atlas_table(df_nodes)
+        cdf, top_terms = cluster_nodes_semantic(atlas_df, n_clusters=10)
+        show = [c for c in ["Cluster", "Type", "Path", "ParamCount", "NameCluster", "Role"] if c in cdf.columns]
+        _render_df(cdf[show].head(300), color_tables=False, height=360, context_label="ClusterNodes", scope_prefix="atlas", key_tag="ClusterNodes")
+        if top_terms:
+            st.markdown("#### クラスタ別：代表n-gram（雰囲気）")
+            rows = [{"Cluster": k, "TopTerms": ", ".join(v)} for k, v in sorted(top_terms.items())]
+            _render_df(pd.DataFrame(rows), color_tables=False, height=260, context_label="ClusterTopTerms", scope_prefix="atlas", key_tag="ClusterTopTerms")
+
+
+def _safe_filename(s: str) -> str:
+    x = str(s or "").strip()
+    if not x:
+        return "library"
+    return "".join(ch if ch.isalnum() or ch in ("-", "_", ".") else "_" for ch in x)
+
+
+def _df_to_html_table(df: pd.DataFrame, title: str) -> str:
+    if df is None:
+        df = pd.DataFrame()
+    head = f"<h3>{html.escape(title)} ({len(df)} rows)</h3>"
+    if df.empty:
+        return head + "<p>(empty)</p>"
+    table_html = df.to_html(index=False, border=0, escape=True)
+    return head + table_html
+
+
+def _build_full_report_html(analysis: Dict[str, Any], *, scope_prefix: str = "", max_nodes: int = 300, max_edges: int = 600) -> str:
+    lib = str(analysis.get("library", "library"))
+    summary = analysis.get("summary", {}) or {}
+    nodes: pd.DataFrame = analysis.get("nodes", pd.DataFrame())
+    edges: pd.DataFrame = analysis.get("edges", pd.DataFrame())
+    errors: pd.DataFrame = analysis.get("errors", pd.DataFrame())
+    call_edges: pd.DataFrame = analysis.get("call_edges", pd.DataFrame())
+    tables: Dict[str, pd.DataFrame] = analysis.get("tables", {}) or {}
+    param_tables: Dict[str, pd.DataFrame] = analysis.get("param_tables", {}) or {}
+
+    # Mermaid code（全体 + 現在スコープ）
+    mmd_all = mermaid_flowchart(nodes, edges, prefix="", direction="TD", max_nodes=max_nodes, max_edges=max_edges)
+    mmd_scope = mermaid_flowchart(nodes, edges, prefix=scope_prefix, direction="TD", max_nodes=max_nodes, max_edges=max_edges) if scope_prefix else mmd_all
+
+    start_id = str(st.session_state.get("nav_target_id") or "")
+    if not start_id and nodes is not None and not nodes.empty and "Type" in nodes.columns:
+        cand = nodes[nodes["Type"].isin(["function", "method"])].head(1)
+        if not cand.empty:
+            start_id = str(cand.iloc[0].get("ID", ""))
+    mmd_seq = mermaid_sequence(nodes, edges, start_id=start_id, depth=3, max_steps=80) if start_id else "sequenceDiagram\n  %% no start"
+
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    summary_df = pd.DataFrame([{"Metric": k, "Value": v} for k, v in summary.items()])
+
+    parts: List[str] = []
+    parts.append("<h2>Summary</h2>")
+    parts.append(_df_to_html_table(summary_df, "Summary"))
+
+    parts.append("<h2>Split Tables</h2>")
+    for name in ["Modules", "Classes", "Functions", "Methods", "Methods/Props", "External"]:
+        if name in tables:
+            parts.append(_df_to_html_table(tables.get(name, pd.DataFrame()), f"tables.{name}"))
+
+    parts.append("<h2>Param Tables</h2>")
+    for name in ["ParamOverview", "ParamMap"]:
+        if name in param_tables:
+            parts.append(_df_to_html_table(param_tables.get(name, pd.DataFrame()), f"param_tables.{name}"))
+
+    parts.append("<h2>All Analyzed DataFrames</h2>")
+    parts.append(_df_to_html_table(nodes, "nodes"))
+    parts.append(_df_to_html_table(edges, "edges"))
+    parts.append(_df_to_html_table(call_edges, "call_edges"))
+    parts.append(_df_to_html_table(errors, "errors"))
+
+    parts.append("<h2>Mermaid Codes (.mmd)</h2>")
+    parts.append("<h3>Flowchart (all scope)</h3>")
+    parts.append(f"<pre>{html.escape(mmd_all)}</pre>")
+    parts.append("<h3>Flowchart (current scope)</h3>")
+    parts.append(f"<pre>{html.escape(mmd_scope)}</pre>")
+    parts.append("<h3>Sequence</h3>")
+    parts.append(f"<pre>{html.escape(mmd_seq)}</pre>")
+
+    parts.append("<h2>Mermaid Preview</h2>")
+    parts.append('<div class="mermaid">')
+    parts.append(html.escape(mmd_scope))
+    parts.append("</div>")
+    parts.append('<div class="mermaid">')
+    parts.append(html.escape(mmd_seq))
+    parts.append("</div>")
+
+    body = "\n".join(parts)
+    return f"""<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CLE V6 Full Report - {html.escape(lib)}</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 24px; line-height: 1.45; }}
+    h1, h2, h3 {{ margin: 0.8em 0 0.35em; }}
+    table {{ border-collapse: collapse; width: 100%; margin: 8px 0 18px; font-size: 12px; }}
+    th, td {{ border: 1px solid #d9d9d9; padding: 6px 8px; vertical-align: top; }}
+    th {{ background: #f7f7f7; position: sticky; top: 0; }}
+    pre {{ background: #f6f8fa; border: 1px solid #e5e7eb; padding: 10px; overflow-x: auto; white-space: pre-wrap; }}
+    .meta {{ color: #444; margin-bottom: 16px; }}
+  </style>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({{ startOnLoad: true, theme: 'default' }});
+  </script>
+</head>
+<body>
+  <h1>Cognitive Library Explorer V6 - Full Report</h1>
+  <div class="meta">
+    <div><b>Library:</b> {html.escape(lib)}</div>
+    <div><b>Generated:</b> {html.escape(now)}</div>
+    <div><b>Scope prefix:</b> {html.escape(scope_prefix or "(all)")}</div>
+  </div>
+  {body}
+</body>
+</html>
+"""
+
+
+def _render_export(analysis: Dict[str, Any]) -> None:
+    st.subheader("🗄 Export")
+    st.caption("解析済み情報・テーブル・Mermaidコードを1つのHTMLに集約して出力します。")
+
+    prefix = str(st.session_state.get("nav_module") or st.session_state.get("nav_prefix") or "")
+    col1, col2 = st.columns(2)
+    with col1:
+        max_nodes = st.slider("Mermaid max nodes", 50, 500, 300, step=10, key="export_mmd_max_nodes")
+    with col2:
+        max_edges = st.slider("Mermaid max edges", 100, 2000, 600, step=50, key="export_mmd_max_edges")
+
+    if st.button("Export Full HTML", type="primary", key="export_full_html_btn"):
+        report_html = _build_full_report_html(
+            analysis,
+            scope_prefix=prefix,
+            max_nodes=int(max_nodes),
+            max_edges=int(max_edges),
+        )
+        lib = _safe_filename(str(analysis.get("library", "library")))
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        out_dir = Path("outputs/reports_v6")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"cle_v6_full_{lib}_{ts}.html"
+        out_path.write_text(report_html, encoding="utf-8")
+        st.session_state["export_full_html_content"] = report_html
+        st.session_state["export_full_html_path"] = str(out_path)
+        st.success(f"保存しました: {out_path}")
+
+    exported = str(st.session_state.get("export_full_html_content") or "")
+    exported_path = str(st.session_state.get("export_full_html_path") or "")
+    if exported:
+        st.download_button(
+            "Download Full HTML",
+            data=exported,
+            file_name=Path(exported_path).name if exported_path else "cle_v6_full_report.html",
+            mime="text/html",
+            key="export_full_html_download",
+        )
+        if exported_path:
+            st.caption(f"Saved file: {exported_path}")
 
 
 def render_explorer(analysis: Dict[str, Any]) -> None:
@@ -898,28 +1115,10 @@ def render_explorer(analysis: Dict[str, Any]) -> None:
     enable_online_lookup = bool(st.session_state.get("enable_online_lookup", True))
     max_items = int(st.session_state.get("max_list_items", 500))
 
-    view = st.radio("表示モード", ["タブ", "シングルページ"], horizontal=True, index=0)
+    st.session_state["current_lib"] = lib
 
-    if view == "シングルページ":
-        _render_navigator(analysis, color_tables=color_tables, max_items=max_items)
-        st.divider()
-        _render_search(analysis, color_tables=color_tables, max_items=max_items)
-        st.divider()
-        _render_visualize(analysis)
-        st.divider()
-        _render_summary(analysis, color_tables=color_tables)
-        st.divider()
-        _render_param_reverse(analysis)
-        st.divider()
-        _render_tables(analysis, color_tables=color_tables)
-        st.divider()
-        _render_links(analysis, open_new_tab=open_new_tab, enable_online_lookup=enable_online_lookup)
-        st.divider()
-        _render_library_atlas(current_lib=lib)
-        return
-
-    tab_nav, tab_search, tab_viz, tab_sum, tab_param, tab_tables, tab_links, tab_atlas = st.tabs(
-        ["🧭 Navigator", "🔎 Search", "🧠 Visualize", "📊 Summary", "🧬 Param Reverse", "📚 Tables", "🔗 Links", "🌌 Atlas"]
+    tab_nav, tab_search, tab_viz, tab_sum, tab_param, tab_tables, tab_links, tab_atlas, tab_export = st.tabs(
+        ["🧭 Navigator", "🔎 Search", "🧠 Visualize", "📊 Summary", "🧬 Param Reverse", "📚 Tables", "🔗 Links", "🌌 Atlas", "🗄 Export"]
     )
 
     with tab_nav:
@@ -938,3 +1137,5 @@ def render_explorer(analysis: Dict[str, Any]) -> None:
         _render_links(analysis, open_new_tab=open_new_tab, enable_online_lookup=enable_online_lookup)
     with tab_atlas:
         _render_library_atlas(current_lib=lib)
+    with tab_export:
+        _render_export(analysis)
