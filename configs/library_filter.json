@@ -6,6 +6,7 @@
     "absl-py",
     "timesfm",
     "ai4ts",
-    "networkx"
+    "networkx",
+    "autogluon"
   ]
 }

@@ -1,0 +1,5 @@
+max_context,max_horizon,normalize_inputs,window_size,use_continuous_quantile_head,force_flip_invariance,return_backcast,status,tested_group,error_message
+32,10,True,0,False,True,False,Failed,,TimesFM_2p5.forecast() got an unexpected keyword argument 'freq'
+32,10,False,0,False,True,False,Failed,,TimesFM_2p5.forecast() got an unexpected keyword argument 'freq'
+128,10,True,0,False,True,False,Failed,,TimesFM_2p5.forecast() got an unexpected keyword argument 'freq'
+128,10,False,0,False,True,False,Failed,,TimesFM_2p5.forecast() got an unexpected keyword argument 'freq'

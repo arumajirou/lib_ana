@@ -438,6 +438,91 @@ def _copy_button_for_code(code: str, key: str) -> None:
     )
 
 
+def _safe_anchor(text: str) -> str:
+    s = str(text or "").strip().lower()
+    if not s:
+        return "na"
+    out = []
+    for ch in s:
+        if ch.isalnum():
+            out.append(ch)
+        else:
+            out.append("-")
+    a = "".join(out).strip("-")
+    while "--" in a:
+        a = a.replace("--", "-")
+    return a or "na"
+
+
+def _build_codegen_bundle(rows: List[Dict[str, Any]], title: str) -> str:
+    lines: List[str] = [f"# {title}", ""]
+    for it in rows:
+        tp = str(it.get("Type", ""))
+        path = str(it.get("Path", ""))
+        code = str(it.get("Code", "")).rstrip()
+        lines.append(f"# --- {tp}: {path}")
+        lines.append(code)
+        lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _compute_sidebar_counts(analysis: Dict[str, Any]) -> Dict[str, int]:
+    nodes: pd.DataFrame = analysis.get("nodes", pd.DataFrame())
+    errors: pd.DataFrame = analysis.get("errors", pd.DataFrame())
+    out = {
+        "modules": 0,
+        "classes": 0,
+        "functions": 0,
+        "methods_props": 0,
+        "external": 0,
+        "codegen": 0,
+        "nodes": 0,
+        "errors": 0,
+    }
+    if nodes is None or nodes.empty or "Type" not in nodes.columns:
+        return out
+    t = nodes["Type"].astype(str)
+    out["modules"] = int((t == "module").sum())
+    out["classes"] = int((t == "class").sum())
+    out["functions"] = int((t == "function").sum())
+    out["methods_props"] = int(t.isin(["method", "property"]).sum())
+    out["external"] = int((t == "external").sum())
+    out["codegen"] = int(t.isin(["function", "class", "method", "property"]).sum())
+    out["nodes"] = int(len(nodes))
+    out["errors"] = int(len(errors)) if errors is not None else 0
+    return out
+
+
+def _render_sidebar_navigation(analysis: Dict[str, Any]) -> None:
+    c = _compute_sidebar_counts(analysis)
+    sec_links = [
+        ("🧭 Navigator", "sec-navigator"),
+        ("🔎 Search", "sec-search"),
+        ("🧠 Visualize", "sec-visualize"),
+        ("📊 Summary", "sec-summary"),
+        ("🧬 Param Reverse", "sec-param-reverse"),
+        ("📚 Tables", "sec-tables"),
+        ("🔗 Links", "sec-links"),
+        ("🌌 Atlas", "sec-atlas"),
+        ("🗄 Export", "sec-export"),
+    ]
+    nav_links = [
+        (f"Modules ({c['modules']})", "nav-modules"),
+        (f"Classes ({c['classes']})", "nav-classes"),
+        (f"Functions ({c['functions']})", "nav-functions"),
+        (f"Methods/Props ({c['methods_props']})", "nav-methods"),
+        (f"External ({c['external']})", "nav-external"),
+        (f"Codegen ({c['codegen']})", "nav-codegen"),
+    ]
+    st.sidebar.markdown("### Section Links")
+    sec_html = "<br/>".join([f"<a href='#{aid}'>{html.escape(lbl)}</a>" for lbl, aid in sec_links])
+    st.sidebar.markdown(sec_html, unsafe_allow_html=True)
+    st.sidebar.markdown("### Navigator Links")
+    nav_html = "<br/>".join([f"<a href='#{aid}'>{html.escape(lbl)}</a>" for lbl, aid in nav_links])
+    st.sidebar.markdown(nav_html, unsafe_allow_html=True)
+    st.sidebar.caption(f"All Nodes: {c['nodes']} / Errors: {c['errors']}")
+
+
 def _collect_valid_codegen_targets(nodes: pd.DataFrame, module_prefix: str, max_items: int = 300) -> pd.DataFrame:
     if nodes is None or nodes.empty:
         return pd.DataFrame()
@@ -464,6 +549,7 @@ def _render_navigator(
     color_tables: bool,
     max_items: int,
 ) -> None:
+    st.markdown("<a id='sec-navigator'></a>", unsafe_allow_html=True)
     nodes: pd.DataFrame = analysis.get("nodes", pd.DataFrame())
     errors: pd.DataFrame = analysis.get("errors", pd.DataFrame())
 
@@ -727,37 +813,178 @@ def _render_navigator(
 
     run_batch = st.button("Generate stubs for valid targets", key=f"btn::batch_codegen::{module_sel}")
     if run_batch and not valid_targets.empty:
-        type_order = ["function", "class", "method", "property"]
-        st.markdown(
-            "Quick links: " + " | ".join([f"<a href='#codegen-{t}'>{t}</a>" for t in type_order]),
-            unsafe_allow_html=True,
+        # 1回だけ生成してキャッシュ（Type/Group/Eventで再利用）
+        generated_rows: List[Dict[str, Any]] = []
+        for i, r in valid_targets.iterrows():
+            target_id_i = str(r.get("ID", ""))
+            target_path_i = str(r.get("Path", ""))
+            fb_i = inspect_params_from_path(target_path_i) if target_path_i else None
+            code_i = generate_call_stub(nodes, target_id=target_id_i, fallback_params=fb_i)
+            generated_rows.append(
+                {
+                    "RowNo": int(i),
+                    "ID": target_id_i,
+                    "Type": str(r.get("Type", "")),
+                    "Path": target_path_i,
+                    "TopGroup": str(r.get("TopGroup", "")),
+                    "Role": str(r.get("Role", "")),
+                    "NameCluster": str(r.get("NameCluster", "")),
+                    "EventLike": str(r.get("EventLike", "")),
+                    "Code": code_i,
+                }
+            )
+
+        sidebar_copy_links: List[Tuple[str, str]] = []
+
+        # 全体一括コピー/保存
+        all_bundle = _build_codegen_bundle(
+            generated_rows,
+            title=f"CLE V6 batch codegen / module={module_sel} / total={len(generated_rows)}",
         )
+        st.markdown("<a id='codegen-copy-all'></a>", unsafe_allow_html=True)
+        st.markdown("#### 生成コードを一括コピー")
+        sidebar_copy_links.append(("All generated stubs", "codegen-copy-all"))
+        _copy_button_for_code(all_bundle, key=f"batch::all::{module_sel}")
+        st.download_button(
+            "Download all generated stubs (.py)",
+            data=all_bundle,
+            file_name=f"{module_sel.replace('.', '_')}_all_codegen.py",
+            mime="text/x-python",
+            key=f"dl::batch::all::{module_sel}",
+        )
+
+        # Type分類
+        type_order = ["function", "class", "method", "property"]
+        type_links = [f"<a href='#codegen-type-{t}'>{t}</a>" for t in type_order]
+        st.markdown("Quick links (Type): " + " | ".join(type_links), unsafe_allow_html=True)
         for tp in type_order:
-            chunk = valid_targets[valid_targets["Type"] == tp].copy()
-            if chunk.empty:
+            chunk_rows = [x for x in generated_rows if x.get("Type") == tp]
+            if not chunk_rows:
                 continue
-            st.markdown(f"<a id='codegen-{tp}'></a>", unsafe_allow_html=True)
-            st.markdown(f"##### {tp} ({len(chunk)})")
-            for i, r in chunk.iterrows():
-                target_id_i = str(r.get("ID", ""))
-                target_path_i = str(r.get("Path", ""))
-                fb_i = inspect_params_from_path(target_path_i) if target_path_i else None
-                code_i = generate_call_stub(nodes, target_id=target_id_i, fallback_params=fb_i)
+            st.markdown(f"<a id='codegen-type-{tp}'></a>", unsafe_allow_html=True)
+            st.markdown(f"##### Type: {tp} ({len(chunk_rows)})")
+            for x in chunk_rows:
+                target_id_i = str(x.get("ID", ""))
+                target_path_i = str(x.get("Path", ""))
+                code_i = str(x.get("Code", ""))
                 title = f"{tp}: {target_path_i}"
                 with st.expander(title, expanded=False):
                     st.code(code_i, language="python")
-                    _copy_button_for_code(code_i, key=f"batch::{tp}::{target_id_i}::{i}")
+                    _copy_button_for_code(code_i, key=f"batch::{tp}::{target_id_i}::{x.get('RowNo')}")
                     st.download_button(
                         f"Download ({tp}) .py",
                         data=code_i,
                         file_name=f"{target_path_i.replace('.', '_')}_call_stub.py",
                         mime="text/x-python",
-                        key=f"dl::batch::{tp}::{target_id_i}::{i}",
+                        key=f"dl::batch::{tp}::{target_id_i}::{x.get('RowNo')}",
                     )
+
+        # Group分類（TopGroup優先）
+        group_col = ""
+        for cand in ["TopGroup", "Role", "NameCluster"]:
+            vals = [str(x.get(cand, "")).strip() for x in generated_rows]
+            if any(v and v.lower() != "nan" for v in vals):
+                group_col = cand
+                break
+        if group_col:
+            groups = sorted({str(x.get(group_col, "")).strip() for x in generated_rows if str(x.get(group_col, "")).strip() and str(x.get(group_col, "")).strip().lower() != "nan"})
+            if groups:
+                grp_links = [f"<a href='#codegen-group-{_safe_anchor(g)}'>{g}</a>" for g in groups]
+                st.markdown("Quick links (Group): " + " | ".join(grp_links), unsafe_allow_html=True)
+                for g in groups:
+                    chunk_rows = [x for x in generated_rows if str(x.get(group_col, "")).strip() == g]
+                    if not chunk_rows:
+                        continue
+                    st.markdown(f"<a id='codegen-group-{_safe_anchor(g)}'></a>", unsafe_allow_html=True)
+                    st.markdown(f"##### Group ({group_col}): {g} ({len(chunk_rows)})")
+                    grp_copy_id = f"codegen-copy-group-{_safe_anchor(g)}"
+                    st.markdown(f"<a id='{grp_copy_id}'></a>", unsafe_allow_html=True)
+                    grp_bundle = _build_codegen_bundle(chunk_rows, title=f"group={g} ({group_col})")
+                    sidebar_copy_links.append((f"Group copy: {g}", grp_copy_id))
+                    _copy_button_for_code(grp_bundle, key=f"batch::group::{group_col}::{g}::{module_sel}")
+                    st.download_button(
+                        f"Download group ({g}) .py",
+                        data=grp_bundle,
+                        file_name=f"{module_sel.replace('.', '_')}_{group_col}_{_safe_anchor(g)}_codegen.py",
+                        mime="text/x-python",
+                        key=f"dl::batch::group::{group_col}::{g}::{module_sel}",
+                    )
+                    for x in chunk_rows:
+                        tp = str(x.get("Type", ""))
+                        target_id_i = str(x.get("ID", ""))
+                        target_path_i = str(x.get("Path", ""))
+                        code_i = str(x.get("Code", ""))
+                        title = f"{tp}: {target_path_i}"
+                        with st.expander(title, expanded=False):
+                            st.code(code_i, language="python")
+                            _copy_button_for_code(code_i, key=f"batch::grp::{group_col}::{g}::{target_id_i}::{x.get('RowNo')}")
+                            st.download_button(
+                                f"Download ({tp}) .py",
+                                data=code_i,
+                                file_name=f"{target_path_i.replace('.', '_')}_call_stub.py",
+                                mime="text/x-python",
+                                key=f"dl::batch::grp::{group_col}::{g}::{target_id_i}::{x.get('RowNo')}",
+                            )
+
+        # EventLike分類（個別機能は維持しつつ、イベント単位の一括コピーを追加）
+        has_event_col = "EventLike" in valid_targets.columns
+        if has_event_col:
+            ev_groups = [("true", "EventLike=True"), ("false", "EventLike=False"), ("other", "EventLike=Unknown")]
+            ev_links = [f"<a href='#codegen-event-{k}'>{label}</a>" for k, label in ev_groups]
+            st.markdown("Quick links (Event): " + " | ".join(ev_links), unsafe_allow_html=True)
+
+            def _event_key(v: str) -> str:
+                s = str(v).strip().lower()
+                if s in {"true", "1"}:
+                    return "true"
+                if s in {"false", "0"}:
+                    return "false"
+                return "other"
+
+            for evk, evlabel in ev_groups:
+                chunk_rows = [x for x in generated_rows if _event_key(str(x.get("EventLike", ""))) == evk]
+                if not chunk_rows:
+                    continue
+                st.markdown(f"<a id='codegen-event-{evk}'></a>", unsafe_allow_html=True)
+                st.markdown(f"##### {evlabel} ({len(chunk_rows)})")
+                ev_copy_id = f"codegen-copy-event-{evk}"
+                st.markdown(f"<a id='{ev_copy_id}'></a>", unsafe_allow_html=True)
+                ev_bundle = _build_codegen_bundle(chunk_rows, title=f"{evlabel} / module={module_sel}")
+                sidebar_copy_links.append((f"Event copy: {evlabel}", ev_copy_id))
+                _copy_button_for_code(ev_bundle, key=f"batch::event::{evk}::{module_sel}")
+                st.download_button(
+                    f"Download {evlabel} stubs (.py)",
+                    data=ev_bundle,
+                    file_name=f"{module_sel.replace('.', '_')}_{evk}_codegen.py",
+                    mime="text/x-python",
+                    key=f"dl::batch::event::{evk}::{module_sel}",
+                )
+                for x in chunk_rows:
+                    tp = str(x.get("Type", ""))
+                    target_id_i = str(x.get("ID", ""))
+                    target_path_i = str(x.get("Path", ""))
+                    code_i = str(x.get("Code", ""))
+                    title = f"{tp}: {target_path_i}"
+                    with st.expander(title, expanded=False):
+                        st.code(code_i, language="python")
+                        _copy_button_for_code(code_i, key=f"batch::event::{evk}::{target_id_i}::{x.get('RowNo')}")
+                        st.download_button(
+                            f"Download ({tp}) .py",
+                            data=code_i,
+                            file_name=f"{target_path_i.replace('.', '_')}_call_stub.py",
+                            mime="text/x-python",
+                            key=f"dl::batch::event::{evk}::{target_id_i}::{x.get('RowNo')}",
+                        )
+
+        if sidebar_copy_links:
+            st.sidebar.markdown("### Codegen Copy Links")
+            link_html = "<br/>".join([f"<a href='#{aid}'>{html.escape(label)}</a>" for label, aid in sidebar_copy_links])
+            st.sidebar.markdown(link_html, unsafe_allow_html=True)
     elif run_batch and valid_targets.empty:
         st.info("有効な codegen 対象がありません。")
 
 def _render_visualize(analysis: Dict[str, Any]) -> None:
+    st.markdown("<a id='sec-visualize'></a>", unsafe_allow_html=True)
     st.subheader("🧠 Visualize（Mermaid / Sunburst / Network / Sequence）")
 
     nodes: pd.DataFrame = analysis.get("nodes", pd.DataFrame())
@@ -829,6 +1056,7 @@ def _render_visualize(analysis: Dict[str, Any]) -> None:
             st.plotly_chart(fig3, width="stretch")
 
 def _render_summary(analysis: Dict[str, Any], *, color_tables: bool) -> None:
+    st.markdown("<a id='sec-summary'></a>", unsafe_allow_html=True)
     lib = analysis.get("library", "")
     summary = analysis.get("summary", {}) or {}
     tables: Dict[str, pd.DataFrame] = analysis.get("tables", {}) or {}
@@ -860,6 +1088,7 @@ def _render_summary(analysis: Dict[str, Any], *, color_tables: bool) -> None:
 
 
 def _render_param_reverse(analysis: Dict[str, Any]) -> None:
+    st.markdown("<a id='sec-param-reverse'></a>", unsafe_allow_html=True)
     st.subheader("🧬 引数の逆引き（ParamName → API一覧）")
     param_tables: Dict[str, pd.DataFrame] = analysis.get("param_tables", {}) or {}
     df_map = param_tables.get("ParamMap", pd.DataFrame())
@@ -886,6 +1115,7 @@ def _render_param_reverse(analysis: Dict[str, Any]) -> None:
 
 
 def _render_search(analysis: Dict[str, Any], *, color_tables: bool, max_items: int) -> None:
+    st.markdown("<a id='sec-search'></a>", unsafe_allow_html=True)
     st.subheader("🔎 Search（文字 / 曖昧 / 意味）")
     st.caption("検索結果から対象APIを選び、Inspector/Codegen/CallGraphまで一気に辿れます。")
 
@@ -976,6 +1206,7 @@ def _render_search(analysis: Dict[str, Any], *, color_tables: bool, max_items: i
     _render_df(neigh.head(200), color_tables=False, height=260, context_label="CallGraphNeighbors", scope_prefix=pick, key_tag="CallGraphNeighbors")
 
 def _render_tables(analysis: Dict[str, Any], *, color_tables: bool) -> None:
+    st.markdown("<a id='sec-tables'></a>", unsafe_allow_html=True)
     st.subheader("📚 一覧表（分類フィルタ付き）")
     nodes: pd.DataFrame = analysis.get("nodes", pd.DataFrame())
     tables: Dict[str, pd.DataFrame] = analysis.get("tables", {}) or {}
@@ -1001,6 +1232,7 @@ def _render_tables(analysis: Dict[str, Any], *, color_tables: bool) -> None:
 
 
 def _render_links(analysis: Dict[str, Any], *, open_new_tab: bool, enable_online_lookup: bool) -> None:
+    st.markdown("<a id='sec-links'></a>", unsafe_allow_html=True)
     lib = analysis.get("library", "")
     st.subheader("🔗 PyPI / GitHub / HuggingFace へのリンク")
     pkg = st.text_input("Package name（PyPI名）", value=lib)
@@ -1041,6 +1273,7 @@ def _render_links(analysis: Dict[str, Any], *, open_new_tab: bool, enable_online
 
 def _render_library_atlas(current_lib: str) -> None:
     """複数ライブラリをまとめて眺める“探索的”タブ（軽量版）。"""
+    st.markdown("<a id='sec-atlas'></a>", unsafe_allow_html=True)
     st.subheader("🌌 Library Atlas（複数ライブラリの特徴比較）")
     st.caption("※ 解析エンジン(v4/v5)がローカルに存在する環境で動く想定です。")
 
@@ -1234,6 +1467,7 @@ def _build_full_report_html(analysis: Dict[str, Any], *, scope_prefix: str = "",
 
 
 def _render_export(analysis: Dict[str, Any]) -> None:
+    st.markdown("<a id='sec-export'></a>", unsafe_allow_html=True)
     st.subheader("🗄 Export")
     st.caption("解析済み情報・テーブル・Mermaidコードを1つのHTMLに集約して出力します。")
 
@@ -1284,6 +1518,7 @@ def render_explorer(analysis: Dict[str, Any]) -> None:
     max_items = int(st.session_state.get("max_list_items", 500))
 
     st.session_state["current_lib"] = lib
+    _render_sidebar_navigation(analysis)
 
     tab_nav, tab_search, tab_viz, tab_sum, tab_param, tab_tables, tab_links, tab_atlas, tab_export = st.tabs(
         ["🧭 Navigator", "🔎 Search", "🧠 Visualize", "📊 Summary", "🧬 Param Reverse", "📚 Tables", "🔗 Links", "🌌 Atlas", "🗄 Export"]
