@@ -1,0 +1,6 @@
+category,ok_or_skipped,total,ok_or_skipped_rate
+modules,9,9,1.0
+classes,21,21,1.0
+functions,22,22,1.0
+externals,58,58,1.0
+methods,76,76,1.0

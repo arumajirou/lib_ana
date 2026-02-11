@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import replace
 from pathlib import Path
 from typing import Optional, Tuple, List
 
@@ -26,6 +27,37 @@ def sidebar_profile_selector() -> Tuple[ConnectionProfile, str]:
     names = [p.name for p in profiles]
     name = st.sidebar.selectbox("プロファイル", names, index=0)
     prof = next(p for p in profiles if p.name == name)
+
+    with st.sidebar.expander("接続情報を一時変更", expanded=False):
+        override_on = st.checkbox(
+            "一時変更を有効化",
+            value=bool(st.session_state.get(f"conn_override_on::{name}", False)),
+            key=f"conn_override_on::{name}",
+        )
+        o_host = st.text_input("host", value=str(st.session_state.get(f"conn_override_host::{name}", prof.host)), key=f"conn_override_host::{name}")
+        o_port = st.number_input(
+            "port",
+            min_value=1,
+            max_value=65535,
+            value=int(st.session_state.get(f"conn_override_port::{name}", int(prof.port))),
+            step=1,
+            key=f"conn_override_port::{name}",
+        )
+        o_user = st.text_input("user", value=str(st.session_state.get(f"conn_override_user::{name}", prof.user)), key=f"conn_override_user::{name}")
+        o_default_db = st.text_input(
+            "default_db",
+            value=str(st.session_state.get(f"conn_override_default_db::{name}", prof.default_db)),
+            key=f"conn_override_default_db::{name}",
+        )
+
+    if st.session_state.get(f"conn_override_on::{name}", False):
+        prof = replace(
+            prof,
+            host=str(st.session_state.get(f"conn_override_host::{name}", prof.host)).strip() or prof.host,
+            port=int(st.session_state.get(f"conn_override_port::{name}", int(prof.port))),
+            user=str(st.session_state.get(f"conn_override_user::{name}", prof.user)).strip() or prof.user,
+            default_db=str(st.session_state.get(f"conn_override_default_db::{name}", prof.default_db)).strip() or prof.default_db,
+        )
 
     password = get_password(prof.name) or ""
     st.sidebar.caption(f"env: {prof.environment_label} | host={prof.host}:{prof.port} | user={prof.user}")

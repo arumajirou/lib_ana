@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TimesFM 解析バンドル</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 24px; line-height: 1.5; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 900px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .card { border: 1px solid #e5e7eb; border-radius: 14px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    img { max-width: 100%; height: auto; border-radius: 10px; border: 1px solid #eee; }
+    code, pre { background: #f6f8fa; border: 1px solid #e5e7eb; padding: 2px 6px; border-radius: 6px; }
+    a { color: #0b57d0; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .meta { color: #555; font-size: 13px; }
+    ul { margin: 0.3em 0 0.6em 1.1em; }
+  </style>
+</head>
+<body>
+  <h1>TimesFM 解析バンドル</h1>
+  <div class="meta">生成: 2026-02-11 10:37:01 / 元レポート: cle_v6_full_timesfm_20260211_182948.html</div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1) 入口</h2>
+      <ul>
+        <li><a href="./cle_report.html">CLE V6 フルレポート（HTML）</a></li>
+        <li><a href="../ChatGPT-TimesFM機能解析.md">機能解析メモ（Markdown）</a></li>
+        <li><a href="./mermaid/graph_preview.html">Mermaid 図プレビュー（CDN使用）</a></li>
+      </ul>
+
+      <h2>2) 主要メトリクス</h2>
+      <ul>
+        <li><b>library</b>: timesfm</li>
+<li><b>root_modules</b>: [timesfm]</li>
+<li><b>files_parsed</b>: 9</li>
+<li><b>modules</b>: 9</li>
+<li><b>classes</b>: 21</li>
+<li><b>functions</b>: 22</li>
+<li><b>methods</b>: 76</li>
+<li><b>external</b>: 58</li>
+<li><b>nodes</b>: 186</li>
+<li><b>edges</b>: 241</li>
+<li><b>errors</b>: 0</li>
+      </ul>
+
+      <h2>3) 抽出CSV</h2>
+      <ul>
+        <li><a href="../extracted/tables_modules.csv">tables_modules.csv</a></li>
+        <li><a href="../extracted/tables_classes.csv">tables_classes.csv</a></li>
+        <li><a href="../extracted/tables_functions.csv">tables_functions.csv</a></li>
+        <li><a href="../extracted/tables_methods.csv">tables_methods.csv</a></li>
+        <li><a href="../extracted/tables_external.csv">tables_external.csv</a></li>
+        <li><a href="../extracted/nodes.csv">nodes.csv</a> / <a href="../extracted/edges.csv">edges.csv</a></li>
+        <li><a href="../extracted/summary.json">summary.json</a></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>4) 可視化</h2>
+      <p class="meta">画像は既存のエクスポート（静的）です。</p>
+      <h3>サンバースト（階層）</h3>
+      <img src="./images/sunburst.png" alt="TimesFM sunburst" />
+      <h3>ネットワーク（依存/関係）</h3>
+      <img src="./images/network.png" alt="TimesFM network" />
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <h2>5) 再生成スクリプト</h2>
+    <p>このバンドル内の <code>scripts/extract_from_report.py</code> は、<code>site/cle_report.html</code> からテーブルを再抽出して <code>extracted/</code> を更新します。</p>
+    <pre>python scripts/extract_from_report.py</pre>
+  </div>
+</body>
+</html>

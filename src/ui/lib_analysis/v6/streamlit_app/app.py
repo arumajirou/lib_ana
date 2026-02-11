@@ -70,7 +70,8 @@ def _init_state() -> None:
         st.session_state.color_tables = False
         st.session_state.enable_online_lookup = True
         st.session_state.max_list_items = 500
-        st.session_state.dedupe_ui = True  # UI上で重複レコードをまとめる
+        # 正確表示を優先し、初期値は重複集約しない。
+        st.session_state.dedupe_ui = False
         st.session_state.deep_param_inspect = False
         st.session_state.enable_callgraph = False
         st.session_state.callgraph_max_files = 600
@@ -123,7 +124,16 @@ def main() -> None:
         st.session_state.color_tables = st.checkbox("表を色分けする（Type別）", value=bool(st.session_state.color_tables))
         st.session_state.enable_online_lookup = st.checkbox("PyPI/GitHub/HF をオンライン探索", value=bool(st.session_state.enable_online_lookup))
         st.session_state.max_list_items = st.slider("リスト最大表示件数（重さ対策）", 100, 5000, int(st.session_state.max_list_items), step=100)
-        st.session_state.dedupe_ui = st.checkbox("重複レコードをまとめる（UI）", value=bool(st.session_state.dedupe_ui))
+        exact_view = st.checkbox(
+            "正確表示優先（推奨）",
+            value=True,
+            help="ON: 重複集約を無効化し、解析結果の生データ件数に合わせて表示します。",
+        )
+        if exact_view:
+            st.session_state.dedupe_ui = False
+            st.session_state.max_list_items = max(int(st.session_state.max_list_items), 2000)
+        else:
+            st.session_state.dedupe_ui = st.checkbox("重複レコードをまとめる（UI）", value=bool(st.session_state.dedupe_ui))
 
         st.divider()
         st.subheader("Deep options")

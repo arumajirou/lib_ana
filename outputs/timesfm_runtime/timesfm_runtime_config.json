@@ -1,0 +1,18 @@
+{
+  "freq": "D",
+  "value_name": "y",
+  "horizon_len": 16,
+  "context_len": 128,
+  "per_core_batch_size": 32,
+  "backend": "cpu",
+  "model_dims": 1280,
+  "num_layers": 20,
+  "num_heads": 16,
+  "input_patch_len": 32,
+  "output_patch_len": 128,
+  "point_forecast_mode": "median",
+  "checkpoint_path": null,
+  "huggingface_repo_id": null,
+  "checkpoint_version": "torch",
+  "checkpoint_local_dir": "/mnt/e/env/ts/lib_ana/outputs/timesfm_runtime/hf_cache"
+}

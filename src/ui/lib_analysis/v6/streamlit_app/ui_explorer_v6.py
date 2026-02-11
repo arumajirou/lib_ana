@@ -22,7 +22,7 @@ from v6.core.link_resolver_v6 import (
     guess_huggingface_search_url,
 )
 from v6.core.inspect_params_v6 import inspect_params_from_path
-from v6.core.codegen_v6 import generate_call_stub
+from v6.core.codegen_v6 import generate_call_stub, generate_timesfm_configs_bundle
 from v6.core.mermaid_v6 import mermaid_flowchart, mermaid_sequence
 from v6.core.viz_v6 import (
     build_sunburst_frame,
@@ -125,6 +125,27 @@ def _render_df(
             mime="text/csv",
             key=f"dl::{widget_key}",
         )
+
+
+def _summary_metric(summary: Dict[str, Any], tables: Dict[str, pd.DataFrame], key: str) -> int:
+    """summary の表記ゆれに影響されない件数取得。"""
+    if key in tables and isinstance(tables.get(key), pd.DataFrame):
+        return int(len(tables[key]))
+    alias = {
+        "Modules": ["Modules", "modules"],
+        "Classes": ["Classes", "classes"],
+        "Functions": ["Functions", "functions"],
+        "Methods/Props": ["Methods/Props", "Methods", "methods"],
+        "External": ["External", "external"],
+        "Errors": ["Errors", "errors"],
+    }.get(key, [key])
+    for a in alias:
+        if a in summary:
+            try:
+                return int(summary.get(a, 0))
+            except Exception:
+                pass
+    return 0
 
 
 def _filter_nodes_by_prefix(nodes: pd.DataFrame, prefix: str) -> pd.DataFrame:
@@ -398,6 +419,45 @@ def _render_scope_tables(
                 key_tag=f"{scope_label}::{k}",
             )
 
+
+
+def _copy_button_for_code(code: str, key: str) -> None:
+    safe_key = "".join(ch if ch.isalnum() or ch in ("_", "-") else "_" for ch in key)
+    txt = html.escape(code or "")
+    components.html(
+        f"""
+        <textarea id="ta_{safe_key}" style="position:absolute;left:-9999px;">{txt}</textarea>
+        <button
+          style="padding:6px 10px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;"
+          onclick="navigator.clipboard.writeText(document.getElementById('ta_{safe_key}').value)">
+          Copy code
+        </button>
+        """,
+        height=44,
+        scrolling=False,
+    )
+
+
+def _collect_valid_codegen_targets(nodes: pd.DataFrame, module_prefix: str, max_items: int = 300) -> pd.DataFrame:
+    if nodes is None or nodes.empty:
+        return pd.DataFrame()
+    scoped = _filter_nodes_by_prefix(nodes, module_prefix)
+    if scoped is None or scoped.empty or "Type" not in scoped.columns:
+        return pd.DataFrame()
+    df = scoped[scoped["Type"].isin(["function", "class", "method", "property"])].copy()
+    if df.empty:
+        return df
+    if "Path" in df.columns:
+        df = df[df["Path"].notna() & (df["Path"].astype(str) != "")]
+        df = df.drop_duplicates(subset=["Type", "Path"], keep="first")
+    if "Name" in df.columns:
+        m = df["Name"].astype(str).str.startswith("__") & (df["Name"].astype(str) != "__init__")
+        df = df[~m]
+    type_order = {"function": 0, "class": 1, "method": 2, "property": 3}
+    df["_ord"] = df["Type"].map(type_order).fillna(9).astype(int)
+    df = df.sort_values(["_ord", "Path"]).drop(columns=["_ord"])
+    return df.head(max_items).copy()
+
 def _render_navigator(
     analysis: Dict[str, Any],
     *,
@@ -412,6 +472,20 @@ def _render_navigator(
         st.info("解析結果がありません。")
         return
 
+    st.markdown(
+        """
+        <div style="margin:6px 0 10px 0;">
+          <a href="#nav-modules">Modules</a> |
+          <a href="#nav-classes">Classes</a> |
+          <a href="#nav-functions">Functions</a> |
+          <a href="#nav-methods">Methods/Props</a> |
+          <a href="#nav-external">External</a> |
+          <a href="#nav-codegen">Codegen</a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     dedupe_ui = bool(st.session_state.get("dedupe_ui", True))
     df_mod = nodes[nodes["Type"] == "module"].copy()
     if df_mod.empty:
@@ -423,6 +497,7 @@ def _render_navigator(
         df_mod = df_mod.drop_duplicates(subset=["Path"], keep="first").copy()
     module_paths = df_mod["Path"].astype(str).tolist()
 
+    st.markdown("<a id='nav-modules'></a>", unsafe_allow_html=True)
     st.markdown("#### Modules")
     _render_df(
         df_mod.head(max_items),
@@ -479,6 +554,7 @@ def _render_navigator(
     df_functions = _mk_label(scoped[scoped["Type"] == "function"].copy())
     df_external = _mk_label(scoped[scoped["Type"] == "external"].copy())
 
+    st.markdown("<a id='nav-classes'></a>", unsafe_allow_html=True)
     st.markdown("#### Classes")
     _render_df(
         df_classes.head(max_items),
@@ -488,11 +564,17 @@ def _render_navigator(
         scope_prefix=module_sel,
         key_tag="Navigator::ClassesTable",
     )
-    class_labels = ["(skip)"] + df_classes["Label"].tolist()[:max_items]
-    class_sel = st.selectbox("Classes", options=class_labels, index=0, key="class_sel")
-    class_row = df_classes[df_classes["Label"] == class_sel].head(1) if class_sel != "(skip)" else pd.DataFrame()
+    class_labels = df_classes["Label"].tolist()[:max_items]
+    if class_labels:
+        default_class_idx = class_labels.index(st.session_state["class_sel"]) if st.session_state.get("class_sel") in class_labels else 0
+        class_sel = st.selectbox("Classes", options=class_labels, index=default_class_idx, key="class_sel")
+        class_row = df_classes[df_classes["Label"] == class_sel].head(1)
+    else:
+        st.caption("Classes: 選択可能な項目がありません。")
+        class_row = pd.DataFrame()
     class_id = str(class_row.iloc[0].get("ID", "")) if not class_row.empty else ""
 
+    st.markdown("<a id='nav-functions'></a>", unsafe_allow_html=True)
     st.markdown("#### Functions")
     _render_df(
         df_functions.head(max_items),
@@ -502,11 +584,17 @@ def _render_navigator(
         scope_prefix=module_sel,
         key_tag="Navigator::FunctionsTable",
     )
-    fn_labels = ["(skip)"] + df_functions["Label"].tolist()[:max_items]
-    fn_sel = st.selectbox("Functions", options=fn_labels, index=0, key="function_sel")
-    fn_row = df_functions[df_functions["Label"] == fn_sel].head(1) if fn_sel != "(skip)" else pd.DataFrame()
+    fn_labels = df_functions["Label"].tolist()[:max_items]
+    if fn_labels:
+        default_fn_idx = fn_labels.index(st.session_state["function_sel"]) if st.session_state.get("function_sel") in fn_labels else 0
+        fn_sel = st.selectbox("Functions", options=fn_labels, index=default_fn_idx, key="function_sel")
+        fn_row = df_functions[df_functions["Label"] == fn_sel].head(1)
+    else:
+        st.caption("Functions: 選択可能な項目がありません。")
+        fn_row = pd.DataFrame()
     fn_id = str(fn_row.iloc[0].get("ID", "")) if not fn_row.empty else ""
 
+    st.markdown("<a id='nav-external'></a>", unsafe_allow_html=True)
     st.markdown("#### External")
     _render_df(
         df_external.head(max_items),
@@ -516,9 +604,14 @@ def _render_navigator(
         scope_prefix=module_sel,
         key_tag="Navigator::ExternalTable",
     )
-    ex_labels = ["(skip)"] + df_external["Label"].tolist()[:max_items]
-    ex_sel = st.selectbox("External", options=ex_labels, index=0, key="external_sel")
-    ex_row = df_external[df_external["Label"] == ex_sel].head(1) if ex_sel != "(skip)" else pd.DataFrame()
+    ex_labels = df_external["Label"].tolist()[:max_items]
+    if ex_labels:
+        default_ex_idx = ex_labels.index(st.session_state["external_sel"]) if st.session_state.get("external_sel") in ex_labels else 0
+        ex_sel = st.selectbox("External", options=ex_labels, index=default_ex_idx, key="external_sel")
+        ex_row = df_external[df_external["Label"] == ex_sel].head(1)
+    else:
+        st.caption("External: 選択可能な項目がありません。")
+        ex_row = pd.DataFrame()
     ex_id = str(ex_row.iloc[0].get("ID", "")) if not ex_row.empty else ""
 
     methods_owner_row = class_row if not class_row.empty else ex_row
@@ -527,6 +620,7 @@ def _render_navigator(
     if methods_owner_id:
         df_mem = nodes[(nodes["Parent"].astype(str) == methods_owner_id) & (nodes["Type"].isin(["method", "property"]))].copy()
         df_mem = _mk_label(df_mem)
+        st.markdown("<a id='nav-methods'></a>", unsafe_allow_html=True)
         st.markdown("#### Methods/Props")
         _render_df(
             df_mem.head(max_items),
@@ -536,12 +630,21 @@ def _render_navigator(
             scope_prefix=str(methods_owner_row.iloc[0].get("Path") or module_sel) if not methods_owner_row.empty else module_sel,
             key_tag="Navigator::MethodsPropsTable",
         )
-        mem_labels = ["(skip)"] + df_mem["Label"].tolist()[:max_items]
-        mem_sel = st.selectbox("Methods/Props", options=mem_labels, index=0, key="mem_sel")
-        mem_row = df_mem[df_mem["Label"] == mem_sel].head(1) if mem_sel != "(skip)" else pd.DataFrame()
+        mem_labels = df_mem["Label"].tolist()[:max_items]
+        if mem_labels:
+            default_mem_idx = mem_labels.index(st.session_state["mem_sel"]) if st.session_state.get("mem_sel") in mem_labels else 0
+            mem_sel = st.selectbox("Methods/Props", options=mem_labels, index=default_mem_idx, key="mem_sel")
+            mem_row = df_mem[df_mem["Label"] == mem_sel].head(1)
+        else:
+            st.caption("Methods/Props: 選択可能な項目がありません。")
+            mem_row = pd.DataFrame()
         member_id = str(mem_row.iloc[0].get("ID", "")) if not mem_row.empty else ""
+    else:
+        st.markdown("<a id='nav-methods'></a>", unsafe_allow_html=True)
+        st.markdown("#### Methods/Props")
+        st.caption("上位の Class/External が未選択のため表示できません。")
 
-    target_id = member_id or class_id or fn_id or ex_id or mod_id
+    target_id = member_id or fn_id or class_id or ex_id or mod_id
     st.session_state["nav_target_id"] = target_id
 
     trow = nodes[nodes["ID"].astype(str) == str(target_id)].head(1)
@@ -579,17 +682,80 @@ def _render_navigator(
         )
 
     st.divider()
-    st.markdown("### 🧾 Codegen（選択APIを“引数全部入り”でコード化）")
+    st.markdown("<a id='nav-codegen'></a>", unsafe_allow_html=True)
+    st.markdown("### 🧾 Codegen（上位選択から下位を自動選択し、まとめて生成）")
+
+    if str(module_sel).startswith("timesfm.configs"):
+        st.markdown("#### timesfm.configs の主要Configを自動生成")
+        bundle_code = generate_timesfm_configs_bundle(nodes, module_prefix="timesfm.configs")
+        st.code(bundle_code, language="python")
+        _copy_button_for_code(bundle_code, key="timesfm::configs::bundle")
+        st.download_button(
+            "Download timesfm.configs bundle (.py)",
+            data=bundle_code,
+            file_name="timesfm_configs_bundle.py",
+            mime="text/x-python",
+            key="dl::timesfm::configs::bundle",
+        )
+        st.divider()
+
     fallback = inspect_params_from_path(tpath) if tpath else None
     code = generate_call_stub(nodes, target_id=target_id, fallback_params=fallback)
+    st.markdown("#### 選択中ノードのコード")
+    st.caption(f"Target: {tpath or '(none)'}")
     st.code(code, language="python")
+    _copy_button_for_code(code, key=f"single::{target_id or 'none'}")
     st.download_button(
-        "Download call stub (.py)",
+        "Download selected call stub (.py)",
         data=code,
         file_name=f"{(tpath or 'call').replace('.', '_')}_call_stub.py",
         mime="text/x-python",
         key=f"dl::call_stub::{target_id or 'none'}",
     )
+
+    st.markdown("#### モジュール内の有効ノードを一括生成")
+    valid_targets = _collect_valid_codegen_targets(nodes, module_sel, max_items=max(200, max_items))
+    st.caption(f"Module: {module_sel} / valid targets: {len(valid_targets)}")
+    _render_df(
+        valid_targets.head(max_items),
+        color_tables=False,
+        height=260,
+        context_label="ValidCodegenTargets",
+        scope_prefix=module_sel,
+        key_tag="Navigator::ValidCodegenTargets",
+    )
+
+    run_batch = st.button("Generate stubs for valid targets", key=f"btn::batch_codegen::{module_sel}")
+    if run_batch and not valid_targets.empty:
+        type_order = ["function", "class", "method", "property"]
+        st.markdown(
+            "Quick links: " + " | ".join([f"<a href='#codegen-{t}'>{t}</a>" for t in type_order]),
+            unsafe_allow_html=True,
+        )
+        for tp in type_order:
+            chunk = valid_targets[valid_targets["Type"] == tp].copy()
+            if chunk.empty:
+                continue
+            st.markdown(f"<a id='codegen-{tp}'></a>", unsafe_allow_html=True)
+            st.markdown(f"##### {tp} ({len(chunk)})")
+            for i, r in chunk.iterrows():
+                target_id_i = str(r.get("ID", ""))
+                target_path_i = str(r.get("Path", ""))
+                fb_i = inspect_params_from_path(target_path_i) if target_path_i else None
+                code_i = generate_call_stub(nodes, target_id=target_id_i, fallback_params=fb_i)
+                title = f"{tp}: {target_path_i}"
+                with st.expander(title, expanded=False):
+                    st.code(code_i, language="python")
+                    _copy_button_for_code(code_i, key=f"batch::{tp}::{target_id_i}::{i}")
+                    st.download_button(
+                        f"Download ({tp}) .py",
+                        data=code_i,
+                        file_name=f"{target_path_i.replace('.', '_')}_call_stub.py",
+                        mime="text/x-python",
+                        key=f"dl::batch::{tp}::{target_id_i}::{i}",
+                    )
+    elif run_batch and valid_targets.empty:
+        st.info("有効な codegen 対象がありません。")
 
 def _render_visualize(analysis: Dict[str, Any]) -> None:
     st.subheader("🧠 Visualize（Mermaid / Sunburst / Network / Sequence）")
@@ -679,7 +845,7 @@ def _render_summary(analysis: Dict[str, Any], *, color_tables: bool) -> None:
         "UniqueReturnTypes",
         "Errors",
     ]
-    rows = [{"Metric": k, "Value": summary.get(k, 0)} for k in preferred]
+    rows = [{"Metric": k, "Value": _summary_metric(summary, tables, k)} for k in preferred]
     _render_df(pd.DataFrame(rows), color_tables=False, height=260, context_label="Summary", key_tag="Summary")
 
     metric = st.radio("表を表示（クリック相当）", ["Modules", "Classes", "Functions", "Methods/Props", "External", "Errors"], horizontal=True)
@@ -689,6 +855,7 @@ def _render_summary(analysis: Dict[str, Any], *, color_tables: bool) -> None:
         src_df = tables.get(metric, pd.DataFrame())
         if src_df is None or src_df.empty:
             src_df = tables.get("Methods", pd.DataFrame()) if metric == "Methods/Props" else src_df
+        st.caption(f"Rows: {len(src_df) if src_df is not None else 0}")
         _render_df(src_df, color_tables=color_tables, context_label=metric, scope_prefix="summary", key_tag=f"Summary{metric}")
 
 
@@ -817,6 +984,7 @@ def _render_tables(analysis: Dict[str, Any], *, color_tables: bool) -> None:
     df = tables.get(choice, pd.DataFrame()).copy()
     if (df is None or df.empty) and choice == "Methods/Props":
         df = tables.get("Methods", pd.DataFrame()).copy()
+    st.caption(f"Rows: {len(df) if df is not None else 0}")
     _render_df(df, color_tables=color_tables, height=380, context_label=choice, scope_prefix="tables", key_tag=f"Tables-{choice}")
 
     if nodes is not None and not nodes.empty and "Role" in nodes.columns:

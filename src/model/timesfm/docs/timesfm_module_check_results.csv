@@ -1,0 +1,10 @@
+id,name,module,path,status,error_type,error_message,missing_optional_dep,file,doc_head,entities_in_report
+1,data_loader,timesfm.data_loader,timesfm.data_loader,ok,,,,/home/az/miniconda3/envs/ts/lib/python3.11/site-packages/timesfm/data_loader.py,TF dataloaders for general timeseries datasets.,14
+15,time_features,timesfm.time_features,timesfm.time_features,ok,,,,/home/az/miniconda3/envs/ts/lib/python3.11/site-packages/timesfm/time_features.py,Directory to extract time covariates.,19
+34,timesfm,timesfm,timesfm,ok,,,,/home/az/miniconda3/envs/ts/lib/python3.11/site-packages/timesfm/__init__.py,TimesFM init file.,2
+36,pytorch_patched_decoder,timesfm.pytorch_patched_decoder,timesfm.pytorch_patched_decoder,ok,,,,/home/az/miniconda3/envs/ts/lib/python3.11/site-packages/timesfm/pytorch_patched_decoder.py,Pytorch version of patched decoder.,46
+82,timesfm_jax,timesfm.timesfm_jax,timesfm.timesfm_jax,skipped_optional_dependency,ModuleNotFoundError,No module named 'paxml',paxml,,,20
+102,xreg_lib,timesfm.xreg_lib,timesfm.xreg_lib,ok,,,,/home/az/miniconda3/envs/ts/lib/python3.11/site-packages/timesfm/xreg_lib.py,Helper functions for in-context covariates and regression.,18
+120,patched_decoder,timesfm.patched_decoder,timesfm.patched_decoder,skipped_optional_dependency,ModuleNotFoundError,No module named 'praxis',praxis,,,28
+148,timesfm_torch,timesfm.timesfm_torch,timesfm.timesfm_torch,ok,,,,/home/az/miniconda3/envs/ts/lib/python3.11/site-packages/timesfm/timesfm_torch.py,TimesFM pytorch forecast API for inference.,11
+159,timesfm_base,timesfm.timesfm_base,timesfm.timesfm_base,ok,,,,/home/az/miniconda3/envs/ts/lib/python3.11/site-packages/timesfm/timesfm_base.py,Base class for TimesFM inference. This will be common to PAX and Pytorch.,28

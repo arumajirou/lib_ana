@@ -5,6 +5,7 @@
     "scipy",
     "absl-py",
     "timesfm",
-    "ai4ts"
+    "ai4ts",
+    "networkx"
   ]
 }

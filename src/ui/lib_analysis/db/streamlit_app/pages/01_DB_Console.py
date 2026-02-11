@@ -6,6 +6,7 @@ from datetime import datetime
 import csv
 import io
 import json
+import html
 from pathlib import Path
 
 import streamlit as st
@@ -28,6 +29,7 @@ from ui.lib_analysis.db.core.ddl import DdlExtractor, DumpConfig, DdlError
 
 APP_ROOT = Path(__file__).resolve().parents[2]  # .../ui/lib_analysis/db
 LOG_PATH = APP_ROOT / "logs" / f"db_admin_{datetime.now().strftime('%Y%m%d')}.jsonl"
+OUTPUT_DIR = APP_ROOT / "output"
 audit = AuditLogger(LOG_PATH)
 
 st.set_page_config(page_title="DB Console", layout="wide")
@@ -125,6 +127,146 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
+
+
+def _json_default(o):
+    if isinstance(o, (datetime, Path)):
+        return str(o)
+    return str(o)
+
+
+def _build_export_payload(
+    *,
+    profile_name: str,
+    db: str,
+    schema: str,
+    selected_tables: list[str],
+    insp: Introspector,
+    include_sample: bool,
+    sample_limit: int,
+) -> dict:
+    payload: dict = {
+        "meta": {
+            "profile": profile_name,
+            "database": db,
+            "schema": schema,
+            "selected_tables": selected_tables,
+            "generated_at": datetime.now().isoformat(),
+            "include_sample": bool(include_sample),
+            "sample_limit": int(sample_limit),
+        },
+        "fk_edges_schema": [],
+        "tables": [],
+        "errors": [],
+    }
+
+    try:
+        fk_rows = insp.get_fk_edges(schema)
+    except Exception as e:
+        fk_rows = []
+        payload["errors"].append({"scope": "fk_edges", "error": str(e)})
+    payload["fk_edges_schema"] = fk_rows
+
+    for t in selected_tables:
+        rec = {"table": t}
+        try:
+            ov = insp.get_table_overview(schema, t)
+            rec["overview"] = ov
+            if include_sample:
+                rec["sample_rows"] = insp.get_table_sample(schema, t, limit=int(sample_limit))
+        except Exception as e:
+            rec["error"] = str(e)
+            payload["errors"].append({"scope": f"{schema}.{t}", "error": str(e)})
+        payload["tables"].append(rec)
+    return payload
+
+
+def _payload_to_markdown(payload: dict) -> str:
+    meta = payload.get("meta", {})
+    lines: list[str] = []
+    lines.append("# DB Table Analysis Report")
+    lines.append("")
+    lines.append("## Meta")
+    lines.append(f"- profile: {meta.get('profile')}")
+    lines.append(f"- database: {meta.get('database')}")
+    lines.append(f"- schema: {meta.get('schema')}")
+    lines.append(f"- generated_at: {meta.get('generated_at')}")
+    lines.append(f"- selected_tables: {', '.join(meta.get('selected_tables', []))}")
+    lines.append("")
+    lines.append("## FK Edges (schema)")
+    lines.append("```json")
+    lines.append(json.dumps(payload.get("fk_edges_schema", []), ensure_ascii=False, indent=2, default=_json_default))
+    lines.append("```")
+    lines.append("")
+    lines.append("## Tables")
+    for rec in payload.get("tables", []):
+        tbl = rec.get("table")
+        lines.append(f"### {meta.get('schema')}.{tbl}")
+        if rec.get("error"):
+            lines.append(f"- error: {rec.get('error')}")
+            lines.append("")
+            continue
+        lines.append("#### overview")
+        lines.append("```json")
+        lines.append(json.dumps(rec.get("overview", {}), ensure_ascii=False, indent=2, default=_json_default))
+        lines.append("```")
+        if "sample_rows" in rec:
+            lines.append("#### sample_rows")
+            lines.append("```json")
+            lines.append(json.dumps(rec.get("sample_rows", []), ensure_ascii=False, indent=2, default=_json_default))
+            lines.append("```")
+        lines.append("")
+
+    if payload.get("errors"):
+        lines.append("## Errors")
+        lines.append("```json")
+        lines.append(json.dumps(payload.get("errors", []), ensure_ascii=False, indent=2, default=_json_default))
+        lines.append("```")
+    return "\n".join(lines)
+
+
+def _payload_to_html(payload: dict) -> str:
+    meta = payload.get("meta", {})
+    parts: list[str] = []
+    parts.append("<h1>DB Table Analysis Report</h1>")
+    parts.append("<h2>Meta</h2>")
+    parts.append("<pre>" + html.escape(json.dumps(meta, ensure_ascii=False, indent=2, default=_json_default)) + "</pre>")
+    parts.append("<h2>FK Edges (schema)</h2>")
+    parts.append("<pre>" + html.escape(json.dumps(payload.get("fk_edges_schema", []), ensure_ascii=False, indent=2, default=_json_default)) + "</pre>")
+    parts.append("<h2>Tables</h2>")
+    for rec in payload.get("tables", []):
+        tbl = rec.get("table")
+        parts.append(f"<h3>{html.escape(str(meta.get('schema')))}.{html.escape(str(tbl))}</h3>")
+        if rec.get("error"):
+            parts.append(f"<p><b>error:</b> {html.escape(str(rec.get('error')))}</p>")
+            continue
+        parts.append("<h4>overview</h4>")
+        parts.append("<pre>" + html.escape(json.dumps(rec.get("overview", {}), ensure_ascii=False, indent=2, default=_json_default)) + "</pre>")
+        if "sample_rows" in rec:
+            parts.append("<h4>sample_rows</h4>")
+            parts.append("<pre>" + html.escape(json.dumps(rec.get("sample_rows", []), ensure_ascii=False, indent=2, default=_json_default)) + "</pre>")
+
+    if payload.get("errors"):
+        parts.append("<h2>Errors</h2>")
+        parts.append("<pre>" + html.escape(json.dumps(payload.get("errors", []), ensure_ascii=False, indent=2, default=_json_default)) + "</pre>")
+
+    body = "\n".join(parts)
+    return f"""<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DB Table Analysis Report</title>
+  <style>
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 20px; line-height: 1.4; }}
+    pre {{ background: #f7f7f7; border: 1px solid #ddd; padding: 10px; white-space: pre-wrap; }}
+  </style>
+</head>
+<body>
+{body}
+</body>
+</html>
+"""
 
 profile, password = sidebar_profile_selector()
 if st.sidebar.button("接続テスト"):
@@ -313,7 +455,7 @@ with colA:
                     st.error(str(e))
 
 with colB:
-    tab_over, tab_ddl, tab_apply = st.tabs(["Overview", "DDL", "Apply（確認→実行）"])
+    tab_over, tab_ddl, tab_apply, tab_export = st.tabs(["Overview", "DDL", "Apply（確認→実行）", "Export"])
 
     with tab_over:
         def _parse_pg_array(val):
@@ -749,3 +891,81 @@ Last analyze: {stats.get("last_analyze")}
                     st.session_state.pop("pending_target", None)
                     st.session_state.pop("pending_action", None)
                     st.session_state.pop("pending_exec_db", None)
+
+    with tab_export:
+        st.subheader("解析結果エクスポート")
+        st.caption("選択したテーブルの解析情報をまとめてファイル出力します。")
+
+        if not tables:
+            st.info("このスキーマにテーブルがありません。")
+        else:
+            OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+            ck_prefix = f"export_ck::{db}::{schema}::"
+            ctl1, ctl2 = st.columns([1, 1])
+            with ctl1:
+                if st.button("全選択", key=f"export_select_all::{db}::{schema}"):
+                    for t in tables:
+                        st.session_state[f"{ck_prefix}{t}"] = True
+            with ctl2:
+                if st.button("全解除", key=f"export_unselect_all::{db}::{schema}"):
+                    for t in tables:
+                        st.session_state[f"{ck_prefix}{t}"] = False
+
+            st.markdown("#### テーブル選択（checkbox）")
+            cols = st.columns(3)
+            for i, t in enumerate(tables):
+                with cols[i % 3]:
+                    st.checkbox(t, key=f"{ck_prefix}{t}", value=bool(st.session_state.get(f"{ck_prefix}{t}", False)))
+
+            selected_tables = [t for t in tables if bool(st.session_state.get(f"{ck_prefix}{t}", False))]
+            st.caption(f"選択中: {len(selected_tables)} / {len(tables)}")
+
+            fmt = st.selectbox("出力形式", ["json", "md", "html"], index=0, key=f"export_format::{db}::{schema}")
+            include_sample = st.checkbox("sample rows を含める", value=True, key=f"export_include_sample::{db}::{schema}")
+            sample_limit = st.selectbox("sample rows 件数", [10, 50, 100, 200], index=1, key=f"export_sample_limit::{db}::{schema}")
+
+            if st.button("解析ファイルを生成して保存", type="primary", key=f"export_run::{db}::{schema}"):
+                if not selected_tables:
+                    st.warning("テーブルを1つ以上選択してください。")
+                else:
+                    with st.spinner("解析情報を収集中..."):
+                        payload = _build_export_payload(
+                            profile_name=profile.name,
+                            db=db,
+                            schema=schema,
+                            selected_tables=selected_tables,
+                            insp=insp,
+                            include_sample=bool(include_sample),
+                            sample_limit=int(sample_limit),
+                        )
+
+                    if fmt == "json":
+                        content = json.dumps(payload, ensure_ascii=False, indent=2, default=_json_default)
+                    elif fmt == "md":
+                        content = _payload_to_markdown(payload)
+                    else:
+                        content = _payload_to_html(payload)
+
+                    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    safe_db = db.replace("/", "_").replace("\\", "_")
+                    safe_schema = schema.replace("/", "_").replace("\\", "_")
+                    out_name = f"{safe_db}_{safe_schema}_table_analysis_{ts}.{fmt}"
+                    out_path = OUTPUT_DIR / out_name
+                    out_path.write_text(content, encoding="utf-8")
+
+                    st.session_state["export_last_content"] = content
+                    st.session_state["export_last_file"] = str(out_path)
+                    st.success(f"出力しました: {out_path}")
+
+            last_content = st.session_state.get("export_last_content")
+            last_file = st.session_state.get("export_last_file")
+            if last_content and last_file:
+                st.download_button(
+                    "生成ファイルをダウンロード",
+                    data=str(last_content),
+                    file_name=Path(str(last_file)).name,
+                    mime="text/plain",
+                    key=f"export_download::{db}::{schema}",
+                )
+                st.caption(f"保存先: {last_file}")

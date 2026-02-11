@@ -110,12 +110,14 @@ def _normalize_nodes(df_nodes: pd.DataFrame) -> pd.DataFrame:
 
 def _split_tables(df_nodes: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     if df_nodes is None or df_nodes.empty or "Type" not in df_nodes.columns:
-        return {k: pd.DataFrame() for k in ["Modules","Classes","Functions","Methods","External"]}
+        return {k: pd.DataFrame() for k in ["Modules", "Classes", "Functions", "Methods", "Methods/Props", "External"]}
+    methods_df = df_nodes[df_nodes["Type"].isin(["method", "property"])].copy()
     return {
         "Modules": df_nodes[df_nodes["Type"] == "module"].copy(),
         "Classes": df_nodes[df_nodes["Type"] == "class"].copy(),
         "Functions": df_nodes[df_nodes["Type"] == "function"].copy(),
-        "Methods": df_nodes[df_nodes["Type"].isin(["method","property"])].copy(),
+        "Methods": methods_df,
+        "Methods/Props": methods_df.copy(),
         "External": df_nodes[df_nodes["Type"] == "external"].copy(),
     }
 
@@ -276,9 +278,39 @@ def analyze_library_with_progress(
         progress.progress(100)
         status.update(label="Done", state="complete", expanded=False)
 
+    # 表示側で大小文字や命名差異による不整合を起こさないよう、件数は実データから再計算する。
+    tables = _split_tables(df_nodes2)
+    normalized_counts = {
+        "Modules": int(len(tables.get("Modules", pd.DataFrame()))),
+        "Classes": int(len(tables.get("Classes", pd.DataFrame()))),
+        "Functions": int(len(tables.get("Functions", pd.DataFrame()))),
+        "Methods": int(len(tables.get("Methods", pd.DataFrame()))),
+        "Methods/Props": int(len(tables.get("Methods/Props", pd.DataFrame()))),
+        "External": int(len(tables.get("External", pd.DataFrame()))),
+        "Errors": int(len(df_errors)) if df_errors is not None else 0,
+        "Nodes": int(len(df_nodes2)) if df_nodes2 is not None else 0,
+        "Edges": int(len(df_edges)) if df_edges is not None else 0,
+        "CallEdges": int(len(call_edges)) if call_edges is not None else 0,
+    }
+    summary_merged = dict(summary or {})
+    summary_merged.update(normalized_counts)
+    # lower-case 互換キーも提供（既存参照対策）
+    summary_merged.update(
+        {
+            "modules": normalized_counts["Modules"],
+            "classes": normalized_counts["Classes"],
+            "functions": normalized_counts["Functions"],
+            "methods": normalized_counts["Methods/Props"],
+            "external": normalized_counts["External"],
+            "nodes": normalized_counts["Nodes"],
+            "edges": normalized_counts["Edges"],
+            "errors": normalized_counts["Errors"],
+        }
+    )
+
     return {
         "library": lib_name,
-        "summary": summary,
+        "summary": summary_merged,
         "nodes": df_nodes2,
         "edges": df_edges,
         "errors": df_errors,

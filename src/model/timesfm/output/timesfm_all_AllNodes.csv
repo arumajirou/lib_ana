@@ -1,0 +1,743 @@
+ID,Parent,Type,Name,Path,Module,Docstring,Params,ReturnType,Role,EventLike,NormName,NameCluster,TopGroup
+1,,module,data_loader,timesfm.data_loader,timesfm.data_loader,"TF dataloaders for general timeseries datasets.
+
+The expected input format is csv file with a datetime index.",,,other,False,data_loader,0,timesfm.data_loader
+2,1,class,TimeSeriesdata,timesfm.data_loader.TimeSeriesdata,timesfm.data_loader,Data loader class.,,,other,False,time_seriesdata,0,timesfm.data_loader
+3,2,method,__init__,timesfm.data_loader.TimeSeriesdata.__init__,timesfm.data_loader,"Initialize objects.
+
+Args:
+  data_path: path to csv file
+  datetime_col: column name for datetime col
+  num_cov_cols: list of numerical global covariates
+  cat_cov_cols: list of categorical global covariates
+  ts_cols: columns corresponding to ts
+  train_range: tuple of train ranges
+  val_range: tuple of validation ranges
+  test_range: tuple of test ranges
+  hist_len: historical context
+  pred_len: prediction length
+  batch_size: batch size (number of ts in a batch)
+  freq: freq of original data
+  normalize: std. normalize data or not
+  epoch_len: num iters in an epoch
+  holiday: use holiday features or not
+  permute: permute ts in train batches or not
+
+Returns:
+  None","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'data_path', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'datetime_col', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'num_cov_cols', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'cat_cov_cols', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'ts_cols', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'train_range', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'val_range', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'test_range', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hist_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'pred_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'batch_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': ""'H'""}, {'name': 'normalize', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'True'}, {'name': 'epoch_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'None'}, {'name': 'holiday', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'False'}, {'name': 'permute', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'True'}]",,other,False,init,0,timesfm.data_loader
+4,2,method,_get_cat_cols,timesfm.data_loader.TimeSeriesdata._get_cat_cols,timesfm.data_loader,Get categorical columns.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'cat_cov_cols', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,get_cat_cols,1,timesfm.data_loader
+5,2,method,_normalize_data,timesfm.data_loader.TimeSeriesdata._normalize_data,timesfm.data_loader,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,normalize_data,2,timesfm.data_loader
+6,2,method,train_gen,timesfm.data_loader.TimeSeriesdata.train_gen,timesfm.data_loader,Generator for training data.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,model_fit,False,train_gen,3,timesfm.data_loader
+7,2,method,test_val_gen,timesfm.data_loader.TimeSeriesdata.test_val_gen,timesfm.data_loader,Generator for validation/test data.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'mode', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': ""'val'""}, {'name': 'shift', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': '1'}]",,test,False,test_val_gen,4,timesfm.data_loader
+8,2,method,_get_features_and_ts,timesfm.data_loader.TimeSeriesdata._get_features_and_ts,timesfm.data_loader,Get features and ts in specified windows.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'dtimes', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'tsidx', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hist_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'None'}]",,other,False,get_features_and_ts,5,timesfm.data_loader
+9,2,method,tf_dataset,timesfm.data_loader.TimeSeriesdata.tf_dataset,timesfm.data_loader,Tensorflow Dataset.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'mode', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': ""'train'""}, {'name': 'shift', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': '1'}]",,other,False,tf_dataset,6,timesfm.data_loader
+10,1,external,absl,absl,timesfm.data_loader,,,,other,False,absl,0,absl
+11,1,external,numpy,numpy,timesfm.data_loader,,,,other,False,numpy,1,numpy
+12,1,external,pandas,pandas,timesfm.data_loader,,,,other,False,pandas,2,pandas
+13,1,external,preprocessing,sklearn.preprocessing,timesfm.data_loader,,,,other,False,preprocessing,3,sklearn.preprocessing
+14,1,external,tensorflow,tensorflow,timesfm.data_loader,,,,other,False,tensorflow,4,tensorflow
+15,,module,time_features,timesfm.time_features,timesfm.time_features,"Directory to extract time covariates.
+
+Extract time covariates from datetime.",,,other,False,time_features,1,timesfm.time_features
+16,15,function,_distance_to_holiday,timesfm.time_features._distance_to_holiday,timesfm.time_features,Return distance to given holiday.,"[{'name': 'holiday', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,distance_to_holiday,0,timesfm.time_features
+17,15,class,TimeCovariates,timesfm.time_features.TimeCovariates,timesfm.time_features,Extract all time covariates except for holidays.,,,other,False,time_covariates,1,timesfm.time_features
+18,17,method,__init__,timesfm.time_features.TimeCovariates.__init__,timesfm.time_features,"Init function.
+
+Args:
+  datetimes: pandas DatetimeIndex (lowest granularity supported is min)
+  normalized: whether to normalize features or not
+  holiday: fetch holiday features or not
+
+Returns:
+  None","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'datetimes', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'normalized', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'True'}, {'name': 'holiday', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'False'}]",,other,False,init,0,timesfm.time_features
+19,17,method,_minute_of_hour,timesfm.time_features.TimeCovariates._minute_of_hour,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,minute_of_hour,7,timesfm.time_features
+20,17,method,_hour_of_day,timesfm.time_features.TimeCovariates._hour_of_day,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,hour_of_day,8,timesfm.time_features
+21,17,method,_day_of_week,timesfm.time_features.TimeCovariates._day_of_week,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,day_of_week,9,timesfm.time_features
+22,17,method,_day_of_month,timesfm.time_features.TimeCovariates._day_of_month,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,day_of_month,10,timesfm.time_features
+23,17,method,_day_of_year,timesfm.time_features.TimeCovariates._day_of_year,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,day_of_year,11,timesfm.time_features
+24,17,method,_month_of_year,timesfm.time_features.TimeCovariates._month_of_year,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,month_of_year,12,timesfm.time_features
+25,17,method,_week_of_year,timesfm.time_features.TimeCovariates._week_of_year,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,week_of_year,13,timesfm.time_features
+26,17,method,_get_holidays,timesfm.time_features.TimeCovariates._get_holidays,timesfm.time_features,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,get_holidays,14,timesfm.time_features
+27,17,method,get_covariates,timesfm.time_features.TimeCovariates.get_covariates,timesfm.time_features,Get all time covariates.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,get_covariates,15,timesfm.time_features
+28,15,external,numpy,numpy,timesfm.time_features,,,,other,False,numpy,1,numpy
+29,15,external,pandas,pandas,timesfm.time_features,,,,other,False,pandas,2,pandas
+30,15,external,holiday,pandas.tseries.holiday,timesfm.time_features,,,,other,False,holiday,5,pandas.tseries
+31,15,external,offsets,pandas.tseries.offsets,timesfm.time_features,,,,other,False,offsets,6,pandas.tseries
+32,15,external,preprocessing,sklearn.preprocessing,timesfm.time_features,,,,other,False,preprocessing,3,sklearn.preprocessing
+33,15,external,tqdm,tqdm,timesfm.time_features,,,,other,False,tqdm,7,tqdm
+34,,module,timesfm,timesfm,timesfm,TimesFM init file.,,,other,False,timesfm,2,timesfm
+35,34,external,sys,sys,timesfm,,,,other,False,sys,8,sys
+36,,module,pytorch_patched_decoder,timesfm.pytorch_patched_decoder,timesfm.pytorch_patched_decoder,Pytorch version of patched decoder.,,,other,False,pytorch_patched_decoder,3,timesfm.pytorch_patched_decoder
+37,36,function,create_quantiles,timesfm.pytorch_patched_decoder.create_quantiles,timesfm.pytorch_patched_decoder,,[],list[float],other,False,create_quantiles,1,timesfm.pytorch_patched_decoder
+38,36,class,TimesFMConfig,timesfm.pytorch_patched_decoder.TimesFMConfig,timesfm.pytorch_patched_decoder,Config for initializing timesfm patched_decoder class.,,,other,False,times_fmconfig,2,timesfm.pytorch_patched_decoder
+39,36,function,_masked_mean_std,timesfm.pytorch_patched_decoder._masked_mean_std,timesfm.pytorch_patched_decoder,"Calculates mean and standard deviation of `inputs` across axis 1.
+
+It excludes values where `padding` is 1.
+
+Args:
+  inputs: A PyTorch tensor of shape [b, n, p].
+  padding: A PyTorch tensor of shape [b, n, p] with values 0 or 1.
+
+Returns:
+  A tuple containing the mean and standard deviation.
+  We return the statistics of the first patch with more than three non-padded
+  values.","[{'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'padding', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]","tuple[torch.Tensor, torch.Tensor]",other,False,masked_mean_std,2,timesfm.pytorch_patched_decoder
+40,36,function,_shift_padded_seq,timesfm.pytorch_patched_decoder._shift_padded_seq,timesfm.pytorch_patched_decoder,"Shifts rows of seq based on the first 0 in each row of the mask.
+
+Args:
+  mask: mask tensor of shape [B, N]
+  seq: seq tensor of shape [B, N, P]
+
+Returns:
+  Returns the shifted sequence.","[{'name': 'mask', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'seq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,shift_padded_seq,3,timesfm.pytorch_patched_decoder
+41,36,function,get_large_negative_number,timesfm.pytorch_patched_decoder.get_large_negative_number,timesfm.pytorch_patched_decoder,Returns a large negative value for the given dtype.,"[{'name': 'dtype', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.dtype', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,get_large_negative_number,4,timesfm.pytorch_patched_decoder
+42,36,function,apply_mask_to_logits,timesfm.pytorch_patched_decoder.apply_mask_to_logits,timesfm.pytorch_patched_decoder,"Applies a floating-point mask to a set of logits.
+
+Args:
+    logits: A torch.Tensor of logit values.
+    mask: A torch.Tensor (float32) of mask values with the encoding described
+      in the function documentation.
+
+Returns:
+    Masked logits.","[{'name': 'logits', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'mask', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,apply_mask_to_logits,5,timesfm.pytorch_patched_decoder
+43,36,function,convert_paddings_to_mask,timesfm.pytorch_patched_decoder.convert_paddings_to_mask,timesfm.pytorch_patched_decoder,"Converts binary paddings to a logit mask ready to add to attention matrix.
+
+Args:
+    paddings: binary torch.Tensor of shape [B, T], with 1 denoting padding
+      token.
+    dtype: data type of the input.
+
+Returns:
+    A torch.Tensor of shape [B, 1, 1, T] ready to add to attention logits.","[{'name': 'paddings', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'dtype', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.dtype', 'has_default': True, 'default_repr': 'torch.float32'}]",torch.Tensor,other,False,convert_paddings_to_mask,6,timesfm.pytorch_patched_decoder
+44,36,function,causal_mask,timesfm.pytorch_patched_decoder.causal_mask,timesfm.pytorch_patched_decoder,"Computes and returns causal mask.
+
+Args:
+    input_t: A torch.Tensor of shape [B, T, D].
+
+Returns:
+    An attention_mask torch.Tensor of shape [1, 1, T, T]. Attention mask has
+    already been converted to large negative values.","[{'name': 'input_t', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,causal_mask,7,timesfm.pytorch_patched_decoder
+45,36,function,merge_masks,timesfm.pytorch_patched_decoder.merge_masks,timesfm.pytorch_patched_decoder,"Merges 2 masks.
+
+logscale mask is expected but 0/1 mask is also fine.
+
+Args:
+    a: torch.Tensor of shape [1|B, 1, 1|T, S].
+    b: torch.Tensor of shape [1|B, 1, 1|T, S].
+
+Returns:
+    torch.Tensor of shape [1|B, 1, 1|T, S].","[{'name': 'a', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'b', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,merge_masks,8,timesfm.pytorch_patched_decoder
+46,36,class,ResidualBlock,timesfm.pytorch_patched_decoder.ResidualBlock,timesfm.pytorch_patched_decoder,TimesFM residual block.,,,other,False,residual_block,3,timesfm.pytorch_patched_decoder
+47,46,method,__init__,timesfm.pytorch_patched_decoder.ResidualBlock.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'input_dims', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_dims', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'output_dims', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,init,0,timesfm.pytorch_patched_decoder
+48,46,method,forward,timesfm.pytorch_patched_decoder.ResidualBlock.forward,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'x', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,forward,16,timesfm.pytorch_patched_decoder
+49,36,class,RMSNorm,timesfm.pytorch_patched_decoder.RMSNorm,timesfm.pytorch_patched_decoder,Pax rms norm in pytorch.,,,other,False,rmsnorm,4,timesfm.pytorch_patched_decoder
+50,49,method,__init__,timesfm.pytorch_patched_decoder.RMSNorm.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'dim', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'eps', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'float', 'has_default': True, 'default_repr': '1e-06'}, {'name': 'add_unit_offset', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]",,other,False,init,0,timesfm.pytorch_patched_decoder
+51,49,method,_norm,timesfm.pytorch_patched_decoder.RMSNorm._norm,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'x', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,norm,17,timesfm.pytorch_patched_decoder
+52,49,method,forward,timesfm.pytorch_patched_decoder.RMSNorm.forward,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'x', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,forward,16,timesfm.pytorch_patched_decoder
+53,36,class,TransformerMLP,timesfm.pytorch_patched_decoder.TransformerMLP,timesfm.pytorch_patched_decoder,Pax transformer MLP in pytorch.,,,other,False,transformer_mlp,5,timesfm.pytorch_patched_decoder
+54,53,method,__init__,timesfm.pytorch_patched_decoder.TransformerMLP.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'intermediate_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}]",,other,False,init,0,timesfm.pytorch_patched_decoder
+55,53,method,forward,timesfm.pytorch_patched_decoder.TransformerMLP.forward,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'x', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'paddings', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'None'}]",,other,False,forward,16,timesfm.pytorch_patched_decoder
+56,36,class,TimesFMAttention,timesfm.pytorch_patched_decoder.TimesFMAttention,timesfm.pytorch_patched_decoder,Implements the attention used in TimesFM.,,,other,False,times_fmattention,6,timesfm.pytorch_patched_decoder
+57,56,method,__init__,timesfm.pytorch_patched_decoder.TimesFMAttention.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'num_heads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'num_kv_heads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'head_dim', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}]",,other,False,init,0,timesfm.pytorch_patched_decoder
+58,56,method,_per_dim_scaling,timesfm.pytorch_patched_decoder.TimesFMAttention._per_dim_scaling,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'query', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,per_dim_scaling,18,timesfm.pytorch_patched_decoder
+59,56,method,forward,timesfm.pytorch_patched_decoder.TimesFMAttention.forward,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_states', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'mask', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'kv_write_indices', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'kv_cache', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Tuple[torch.Tensor, torch.Tensor] | None', 'has_default': True, 'default_repr': 'None'}]",torch.Tensor,other,False,forward,16,timesfm.pytorch_patched_decoder
+60,36,class,TimesFMDecoderLayer,timesfm.pytorch_patched_decoder.TimesFMDecoderLayer,timesfm.pytorch_patched_decoder,Transformer layer.,,,other,False,times_fmdecoder_layer,7,timesfm.pytorch_patched_decoder
+61,60,method,__init__,timesfm.pytorch_patched_decoder.TimesFMDecoderLayer.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'intermediate_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'num_heads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'num_kv_heads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'head_dim', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'rms_norm_eps', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'float', 'has_default': True, 'default_repr': '1e-06'}]",,other,False,init,0,timesfm.pytorch_patched_decoder
+62,60,method,forward,timesfm.pytorch_patched_decoder.TimesFMDecoderLayer.forward,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_states', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'mask', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'paddings', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'kv_write_indices', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'kv_cache', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Tuple[torch.Tensor, torch.Tensor] | None', 'has_default': True, 'default_repr': 'None'}]",torch.Tensor,other,False,forward,16,timesfm.pytorch_patched_decoder
+63,36,class,StackedDecoder,timesfm.pytorch_patched_decoder.StackedDecoder,timesfm.pytorch_patched_decoder,Stacked transformer layer.,,,other,False,stacked_decoder,8,timesfm.pytorch_patched_decoder
+64,63,method,__init__,timesfm.pytorch_patched_decoder.StackedDecoder.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'intermediate_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'num_heads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'num_kv_heads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'head_dim', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'num_layers', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'rms_norm_eps', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'float', 'has_default': True, 'default_repr': '1e-06'}]",,other,False,init,0,timesfm.pytorch_patched_decoder
+65,63,method,forward,timesfm.pytorch_patched_decoder.StackedDecoder.forward,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hidden_states', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'paddings', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'kv_write_indices', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'kv_caches', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'List[Tuple[torch.Tensor, torch.Tensor]] | None', 'has_default': True, 'default_repr': 'None'}]",torch.Tensor,other,False,forward,16,timesfm.pytorch_patched_decoder
+66,36,class,PositionalEmbedding,timesfm.pytorch_patched_decoder.PositionalEmbedding,timesfm.pytorch_patched_decoder,"Generates position embedding for a given 1-d sequence.
+
+Attributes:
+    min_timescale: Start of the geometric index. Determines the periodicity of
+      the added signal.
+    max_timescale: End of the geometric index. Determines the frequency of the
+      added signal.
+    embedding_dims: Dimension of the embedding to be generated.",,,other,False,positional_embedding,9,timesfm.pytorch_patched_decoder
+67,66,method,__init__,timesfm.pytorch_patched_decoder.PositionalEmbedding.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'embedding_dims', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'min_timescale', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': True, 'default_repr': '1'}, {'name': 'max_timescale', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': True, 'default_repr': '10000'}]",None,other,False,init,0,timesfm.pytorch_patched_decoder
+68,66,method,forward,timesfm.pytorch_patched_decoder.PositionalEmbedding.forward,timesfm.pytorch_patched_decoder,"Generates a Tensor of sinusoids with different frequencies.
+
+Args:
+    seq_length: an optional Python int defining the output sequence length.
+      if the `position` argument is specified.
+    position:   [B, seq_length], optional position for each token in the
+      sequence, only required when the sequence is packed.
+
+Returns:
+    [B, seqlen, D] if `position` is specified, else [1, seqlen, D]","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'seq_length', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'None'}, {'name': 'position', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': True, 'default_repr': 'None'}]",,other,False,forward,16,timesfm.pytorch_patched_decoder
+69,36,class,PatchedTimeSeriesDecoder,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder,timesfm.pytorch_patched_decoder,Patched time-series decoder.,,,other,False,patched_time_series_decoder,10,timesfm.pytorch_patched_decoder
+70,69,method,__init__,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder.__init__,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'config', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'TimesFMConfig', 'has_default': False, 'default_repr': ''}]",,other,False,init,0,timesfm.pytorch_patched_decoder
+71,69,method,_forward_transform,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder._forward_transform,timesfm.pytorch_patched_decoder,"Input is of shape [B, N, P].","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'patched_pads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]","tuple[torch.Tensor, tuple[torch.Tensor, torch.Tensor]]",other,False,forward_transform,19,timesfm.pytorch_patched_decoder
+72,69,method,_reverse_transform,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder._reverse_transform,timesfm.pytorch_patched_decoder,"Output is of shape [B, N, P, Q].","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'outputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'stats', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'tuple[torch.Tensor, torch.Tensor]', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,reverse_transform,20,timesfm.pytorch_patched_decoder
+73,69,method,_preprocess_input,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder._preprocess_input,timesfm.pytorch_patched_decoder,Preprocess input for stacked transformer.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'input_ts', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'input_padding', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]","tuple[torch.Tensor, torch.Tensor, tuple[torch.Tensor, torch.Tensor] | None, torch.Tensor]",other,False,preprocess_input,21,timesfm.pytorch_patched_decoder
+74,69,method,_postprocess_output,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder._postprocess_output,timesfm.pytorch_patched_decoder,Postprocess output of stacked transformer.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'model_output', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'num_outputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'stats', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'tuple[torch.Tensor, torch.Tensor]', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,postprocess_output,22,timesfm.pytorch_patched_decoder
+75,69,method,forward,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder.forward,timesfm.pytorch_patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'input_ts', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'input_padding', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.LongTensor', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}]",torch.Tensor,other,False,forward,16,timesfm.pytorch_patched_decoder
+76,69,method,decode,timesfm.pytorch_patched_decoder.PatchedTimeSeriesDecoder.decode,timesfm.pytorch_patched_decoder,"Auto-regressive decoding without caching.
+
+Args:
+  input_ts: input time-series and paddings. Time-series shape B x C.
+  paddings: padding shape B x (C + H) where H is the prediction length.
+  freq: frequency shape B x 1
+  horizon_len: prediction length.
+  output_patch_len: output length to be fetched from one step of
+    auto-regressive decoding.
+  max_len: maximum training context length.
+  return_forecast_on_context: whether to return the model forecast on the
+    context except the first input patch.
+
+Returns:
+  Tuple of two forecasting results:
+  - Point (mean) output predictions as a tensor with shape B x H'.
+  - Full predictions (mean and quantiles) as a tensor with shape
+    B x H' x (1 + # quantiles).
+  In particular, if return_forecast_on_context is True, H' is H plus
+  the forecastable context length, i.e. context_len - (first) patch_len.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'input_ts', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'paddings', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.Tensor', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'torch.LongTensor', 'has_default': False, 'default_repr': ''}, {'name': 'horizon_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'output_patch_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'max_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'return_forecast_on_context', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","tuple[torch.Tensor, torch.Tensor]",io_read,False,decode,23,timesfm.pytorch_patched_decoder
+77,36,external,dataclasses,dataclasses,timesfm.pytorch_patched_decoder,,,,other,False,dataclasses,9,dataclasses
+78,36,external,math,math,timesfm.pytorch_patched_decoder,,,,other,False,math,10,math
+79,36,external,typing,typing,timesfm.pytorch_patched_decoder,,,,other,False,typing,11,typing
+80,36,external,torch,torch,timesfm.pytorch_patched_decoder,,,,other,False,torch,12,torch
+81,36,external,functional,torch.nn.functional,timesfm.pytorch_patched_decoder,,,,other,False,functional,13,torch.nn
+82,,module,timesfm_jax,timesfm.timesfm_jax,timesfm.timesfm_jax,TimesFM JAX forecast API for inference.,,,other,False,timesfm_jax,4,timesfm.timesfm_jax
+83,82,class,TimesFmJax,timesfm.timesfm_jax.TimesFmJax,timesfm.timesfm_jax,"TimesFM forecast API for inference.
+
+This class is the scaffolding for calling TimesFM forecast. To properly use:
+  1. Create an instance with the correct hyperparameters of a TimesFM model.
+  2. Call `load_from_checkpoint` to load a compatible checkpoint.
+  3. Call `forecast` for inference.
+
+Given the model size, this API does not shard the model weights for SPMD. All
+parallelism happens on the data dimension.
+
+Compilation happens during the first time `forecast` is called and uses the
+`per_core_batch_size` to set and freeze the input signature. Subsequent calls
+to `forecast` reflect the actual inference latency.",,,other,False,times_fm_jax,11,timesfm.timesfm_jax
+84,83,method,_get_sample_inputs,timesfm.timesfm_jax.TimesFmJax._get_sample_inputs,timesfm.timesfm_jax,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,sampling,False,get_sample_inputs,24,timesfm.timesfm_jax
+85,83,method,__post_init__,timesfm.timesfm_jax.TimesFmJax.__post_init__,timesfm.timesfm_jax,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,post_init,25,timesfm.timesfm_jax
+86,83,method,load_from_checkpoint,timesfm.timesfm_jax.TimesFmJax.load_from_checkpoint,timesfm.timesfm_jax,Loads a checkpoint and compiles the decoder.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'checkpoint', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'timesfm_base.TimesFmCheckpoint', 'has_default': False, 'default_repr': ''}]",None,io_read,False,load_from_checkpoint,26,timesfm.timesfm_jax
+87,83,method,jit_decode,timesfm.timesfm_jax.TimesFmJax.jit_decode,timesfm.timesfm_jax,Jitting decoding function.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,io_read,False,jit_decode,27,timesfm.timesfm_jax
+88,83,method,_forecast,timesfm.timesfm_jax.TimesFmJax._forecast,timesfm.timesfm_jax,"Forecasts on a list of time series.
+
+Args:
+  inputs: list of time series forecast contexts. Each context time series
+    should be in a format convertible to JTensor by `jnp.array`.
+  freq: frequency of each context time series. 0 for high frequency
+    (default), 1 for medium, and 2 for low. Notice this is different from
+    the `freq` required by `forecast_on_df`.
+  window_size: window size of trend + residual decomposition. If None then
+    we do not do decomposition.
+  forecast_context_len: optional max context length.
+  return_forecast_on_context: True to return the forecast on the context
+    when available, i.e. after the first input patch.
+
+Returns:
+A tuple for JTensors:
+- the mean forecast of size (# inputs, # forecast horizon),
+- the full forecast (mean + quantiles) of size
+    (# inputs,  # forecast horizon, 1 + # quantiles).
+
+Raises:
+ValueError: If the checkpoint is not properly loaded.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[Any]', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'window_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'forecast_context_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'return_forecast_on_context', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","tuple[np.ndarray, np.ndarray]",other,False,forecast,28,timesfm.timesfm_jax
+89,82,external,logging,logging,timesfm.timesfm_jax,,,,other,False,logging,14,logging
+90,82,external,multiprocessing,multiprocessing,timesfm.timesfm_jax,,,,other,False,multiprocessing,15,multiprocessing
+91,82,external,time,time,timesfm.timesfm_jax,,,,other,False,time,16,time
+92,82,external,os,os,timesfm.timesfm_jax,,,,other,False,os,17,os
+93,82,external,typing,typing,timesfm.timesfm_jax,,,,other,False,typing,11,typing
+94,82,external,einshape,einshape,timesfm.timesfm_jax,,,,other,False,einshape,18,einshape
+95,82,external,jax,jax,timesfm.timesfm_jax,,,,other,False,jax,19,jax
+96,82,external,numpy,jax.numpy,timesfm.timesfm_jax,,,,other,False,numpy,1,jax.numpy
+97,82,external,numpy,numpy,timesfm.timesfm_jax,,,,other,False,numpy,1,numpy
+98,82,external,huggingface_hub,huggingface_hub,timesfm.timesfm_jax,,,,other,False,huggingface_hub,20,huggingface_hub
+99,82,external,paxml,paxml,timesfm.timesfm_jax,,,,other,False,paxml,21,paxml
+100,82,external,praxis,praxis,timesfm.timesfm_jax,,,,other,False,praxis,22,praxis
+101,82,external,layers,praxis.layers,timesfm.timesfm_jax,,,,other,False,layers,23,praxis.layers
+102,,module,xreg_lib,timesfm.xreg_lib,timesfm.xreg_lib,Helper functions for in-context covariates and regression.,,,other,False,xreg_lib,5,timesfm.xreg_lib
+103,102,function,_unnest,timesfm.xreg_lib._unnest,timesfm.xreg_lib,,"[{'name': 'nested', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[Sequence[Any]]', 'has_default': False, 'default_repr': ''}]",np.ndarray,other,False,unnest,9,timesfm.xreg_lib
+104,102,function,_repeat,timesfm.xreg_lib._repeat,timesfm.xreg_lib,,"[{'name': 'elements', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Iterable[Any]', 'has_default': False, 'default_repr': ''}, {'name': 'counts', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Iterable[int]', 'has_default': False, 'default_repr': ''}]",np.ndarray,other,False,repeat,10,timesfm.xreg_lib
+105,102,function,_to_padded_jax_array,timesfm.xreg_lib._to_padded_jax_array,timesfm.xreg_lib,,"[{'name': 'x', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'np.ndarray', 'has_default': False, 'default_repr': ''}]",jax.Array,other,False,to_padded_jax_array,11,timesfm.xreg_lib
+106,102,class,BatchedInContextXRegBase,timesfm.xreg_lib.BatchedInContextXRegBase,timesfm.xreg_lib,"Helper class for in-context regression covariate formatting.
+
+Attributes:
+  targets: List of targets (responses) of the in-context regression.
+  train_lens: List of lengths of each target vector from the context.
+  test_lens: List of lengths of each forecast horizon.
+  train_dynamic_numerical_covariates: Dict of covariate names mapping to the
+    dynamic numerical covariates of each forecast task on the context. Their
+    lengths should match the corresponding lengths in `train_lens`.
+  train_dynamic_categorical_covariates: Dict of covariate names mapping to the
+    dynamic categorical covariates of each forecast task on the context. Their
+    lengths should match the corresponding lengths in `train_lens`.
+  test_dynamic_numerical_covariates: Dict of covariate names mapping to the
+    dynamic numerical covariates of each forecast task on the horizon. Their
+    lengths should match the corresponding lengths in `test_lens`.
+  test_dynamic_categorical_covariates: Dict of covariate names mapping to the
+    dynamic categorical covariates of each forecast task on the horizon. Their
+    lengths should match the corresponding lengths in `test_lens`.
+  static_numerical_covariates: Dict of covariate names mapping to the static
+    numerical covariates of each forecast task.
+  static_categorical_covariates: Dict of covariate names mapping to the static
+    categorical covariates of each forecast task.",,,other,False,batched_in_context_xreg_base,12,timesfm.xreg_lib
+107,106,method,__init__,timesfm.xreg_lib.BatchedInContextXRegBase.__init__,timesfm.xreg_lib,"Initializes with the exogenous covariate inputs.
+
+Here we use model fitting language to refer to the context as 'train' and
+the horizon as 'test'. We assume batched inputs. To properly format the
+request:
+
+ - `train_lens` represents the contexts in the batch. Targets and all train
+ dynamic covariates should have the same lengths as the corresponding
+ elements
+ in `train_lens`. Notice each `train_len` can be different from the exact
+ length of the corresponding context depending on how much of the context is
+ used for fitting the in-context model.
+ - `test_lens` represents the horizon lengths in the batch. All tesdt
+ dynamic
+ covariates should have the same lengths as the corresponding elements in
+ `test_lens`.
+ - Static covariates should be one for each input.
+ - For train and test dynamic covariates, they should have the same
+ covariate
+ names.
+
+ Pass an empty dict {} for a covariate type if it is not present.
+
+ Example:
+   Here is a set of valid inputs whose schema can be used for reference.
+   ```
+   targets = [
+       [0.0, 0.1, 0.2],
+       [0.0, 0.1, 0.2, 0.3],
+   ]  # Two inputs in this batch.
+   train_lens = [3, 4]
+   test_lens = [2, 5]  # Forecast horizons 2 and 5 respectively.
+   train_dynamic_numerical_covariates = {
+       ""cov_1_dn"": [[0.0, 0.5, 1.0], [0.0, 0.5, 1.0, 1.5]],
+       ""cov_2_dn"": [[0.0, 1.5, 1.0], [0.0, 1.5, 1.0, 2.5]],
+   }  # Each train dynamic covariate has 3 and 4 elements respectively.
+   test_dynamic_numerical_covariates = {
+       ""cov_1_dn"": [[0.1, 0.6], [0.1, 0.6, 1.1, 1.6, 2.4]],
+       ""cov_2_dn"": [[0.1, 1.1], [0.1, 1.6, 1.1, 2.6, 10.0]],
+   }  # Each test dynamic covariate has 2 and 5 elements respectively.
+   train_dynamic_categorical_covariates = {
+       ""cov_1_dc"": [[0, 1, 0], [0, 1, 2, 3]],
+       ""cov_2_dc"": [[""good"", ""bad"", ""good""], [""good"", ""good"", ""bad"",
+       ""bad""]],
+   }
+   test_dynamic_categorical_covariates = {
+       ""cov_1_dc"": [[1, 0], [1, 0, 2, 3, 1]],
+       ""cov_2_dc"": [[""bad"", ""good""], [""bad"", ""bad"", ""bad"", ""bad"", ""bad""]],
+   }
+   static_numerical_covariates = {
+       ""cov_1_sn"": [0.0, 3.0],
+       ""cov_2_sn"": [2.0, 1.0],
+       ""cov_3_sn"": [1.0, 2.0],
+   }  # Each static covariate has 1 element for each input.
+   static_categorical_covariates = {
+       ""cov_1_sc"": [""apple"", ""orange""],
+       ""cov_2_sc"": [2, 3],
+   }
+   ```
+
+Args:
+  targets: List of targets (responses) of the in-context regression.
+  train_lens: List of lengths of each target vector from the context.
+  test_lens: List of lengths of each forecast horizon.
+  train_dynamic_numerical_covariates: Dict of covariate names mapping to the
+    dynamic numerical covariates of each forecast task on the context. Their
+    lengths should match the corresponding lengths in `train_lens`.
+  train_dynamic_categorical_covariates: Dict of covariate names mapping to
+    the dynamic categorical covariates of each forecast task on the context.
+    Their lengths should match the corresponding lengths in `train_lens`.
+  test_dynamic_numerical_covariates: Dict of covariate names mapping to the
+    dynamic numerical covariates of each forecast task on the horizon. Their
+    lengths should match the corresponding lengths in `test_lens`.
+  test_dynamic_categorical_covariates: Dict of covariate names mapping to
+    the dynamic categorical covariates of each forecast task on the horizon.
+    Their lengths should match the corresponding lengths in `test_lens`.
+  static_numerical_covariates: Dict of covariate names mapping to the static
+    numerical covariates of each forecast task.
+  static_categorical_covariates: Dict of covariate names mapping to the
+    static categorical covariates of each forecast task.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'targets', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[Sequence[float]]', 'has_default': False, 'default_repr': ''}, {'name': 'train_lens', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int]', 'has_default': False, 'default_repr': ''}, {'name': 'test_lens', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int]', 'has_default': False, 'default_repr': ''}, {'name': 'train_dynamic_numerical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Mapping[str, Sequence[Sequence[float]]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'train_dynamic_categorical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Mapping[str, Sequence[Sequence[Category]]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'test_dynamic_numerical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Mapping[str, Sequence[Sequence[float]]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'test_dynamic_categorical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Mapping[str, Sequence[Sequence[Category]]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'static_numerical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Mapping[str, Sequence[float]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'static_categorical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Mapping[str, Sequence[Category]] | None', 'has_default': True, 'default_repr': 'None'}]",None,other,False,init,0,timesfm.xreg_lib
+108,106,method,_assert_covariates,timesfm.xreg_lib.BatchedInContextXRegBase._assert_covariates,timesfm.xreg_lib,Verifies the validity of the covariate inputs.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'assert_covariate_shapes', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]",None,other,False,assert_covariates,29,timesfm.xreg_lib
+109,106,method,create_covariate_matrix,timesfm.xreg_lib.BatchedInContextXRegBase.create_covariate_matrix,timesfm.xreg_lib,"Creates target vector and covariate matrices for in context regression.
+
+Here we use model fitting language to refer to the context as 'train' and
+the horizon as 'test'.
+
+Args:
+  one_hot_encoder_drop: Which drop strategy to use for the one hot encoder.
+  use_intercept: Whether to prepare an intercept (all 1) column in the
+    matrices.
+  assert_covariates: Whether to assert the validity of the covariate inputs.
+  assert_covariate_shapes: Whether to assert the shapes of the covariate
+    inputs when `assert_covariates` is True.
+
+Returns:
+  A tuple of the target vector, the covariate matrix for the context, and
+  the covariate matrix for the horizon.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'one_hot_encoder_drop', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'str | None', 'has_default': True, 'default_repr': ""'first'""}, {'name': 'use_intercept', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'True'}, {'name': 'assert_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}, {'name': 'assert_covariate_shapes', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","tuple[np.ndarray, np.ndarray, np.ndarray]",other,False,create_covariate_matrix,30,timesfm.xreg_lib
+110,106,method,fit,timesfm.xreg_lib.BatchedInContextXRegBase.fit,timesfm.xreg_lib,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",Any,model_fit,False,fit,31,timesfm.xreg_lib
+111,102,class,BatchedInContextXRegLinear,timesfm.xreg_lib.BatchedInContextXRegLinear,timesfm.xreg_lib,Linear in-context regression model.,,,other,False,batched_in_context_xreg_linear,13,timesfm.xreg_lib
+112,111,method,fit,timesfm.xreg_lib.BatchedInContextXRegLinear.fit,timesfm.xreg_lib,"Fits a linear model for in-context regression.
+
+Args:
+  ridge: A non-negative value for specifying the ridge regression penalty.
+    If 0 is provided, fallback to ordinary least squares. Note this penalty
+    is added to the normalized covariate matrix.
+  one_hot_encoder_drop: Which drop strategy to use for the one hot encoder.
+  use_intercept: Whether to prepare an intercept (all 1) column in the
+    matrices.
+  force_on_cpu: Whether to force execution on cpu for accelerator machines.
+  max_rows_per_col: How many rows to subsample per column. 0 for no
+    subsampling. This is for speeding up model fitting.
+  max_rows_per_col_sample_seed: The seed for the subsampling if needed by
+    `max_rows_per_col`.
+  debug_info: Whether to return debug info.
+  assert_covariates: Whether to assert the validity of the covariate inputs.
+  assert_covariate_shapes: Whether to assert the shapes of the covariate
+    inputs when `assert_covariates` is True.
+
+Returns:
+  If `debug_info` is False:
+    The linear fits on the horizon.
+  If `debug_info` is True:
+    A tuple of:
+    - the linear fits on the horizon,
+    - the linear fits on the context,
+    - the flattened target vector,
+    - the covariate matrix for the context, and
+    - the covariate matrix for the horizon.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'ridge', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'float', 'has_default': True, 'default_repr': '0.0'}, {'name': 'one_hot_encoder_drop', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'str | None', 'has_default': True, 'default_repr': ""'first'""}, {'name': 'use_intercept', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'True'}, {'name': 'force_on_cpu', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}, {'name': 'max_rows_per_col', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': True, 'default_repr': '0'}, {'name': 'max_rows_per_col_sample_seed', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': True, 'default_repr': '42'}, {'name': 'debug_info', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}, {'name': 'assert_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}, {'name': 'assert_covariate_shapes', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","list[np.ndarray] | tuple[list[np.ndarray], list[np.ndarray], jax.Array, jax.Array, jax.Array]",model_fit,False,fit,31,timesfm.xreg_lib
+113,102,external,itertools,itertools,timesfm.xreg_lib,,,,other,False,itertools,24,itertools
+114,102,external,math,math,timesfm.xreg_lib,,,,other,False,math,10,math
+115,102,external,typing,typing,timesfm.xreg_lib,,,,other,False,typing,11,typing
+116,102,external,jax,jax,timesfm.xreg_lib,,,,other,False,jax,19,jax
+117,102,external,numpy,jax.numpy,timesfm.xreg_lib,,,,other,False,numpy,1,jax.numpy
+118,102,external,numpy,numpy,timesfm.xreg_lib,,,,other,False,numpy,1,numpy
+119,102,external,sklearn,sklearn,timesfm.xreg_lib,,,,other,False,sklearn,25,sklearn
+120,,module,patched_decoder,timesfm.patched_decoder,timesfm.patched_decoder,"Pax ML model for patched time-series decoder.
+
+The file implements Residual MLPs, Patched Decoder layers and PAX ML models.",,,other,False,patched_decoder,6,timesfm.patched_decoder
+121,120,function,_shift_padded_seq,timesfm.patched_decoder._shift_padded_seq,timesfm.patched_decoder,Shifts rows of seq based on the first 0 in each row of the mask.,"[{'name': 'mask', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'seq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}]",JTensor,other,False,shift_padded_seq,3,timesfm.patched_decoder
+122,120,class,ResidualBlock,timesfm.patched_decoder.ResidualBlock,timesfm.patched_decoder,"Simple feedforward block with residual connection.
+
+Attributes:
+  input_dims: input dimension.
+  hidden_dims: hidden dimension.
+  output_dims: output dimension.
+  dropout_prob: dropout probability.
+  layer_norm: whether to use layer norm or not.
+  dropout_tpl: config for dropout.
+  ln_tpl: config for layer norm.
+  act_tpl: config for activation in hidden layer.",,,other,False,residual_block,3,timesfm.patched_decoder
+123,122,method,setup,timesfm.patched_decoder.ResidualBlock.setup,timesfm.patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,setup,32,timesfm.patched_decoder
+124,122,method,__call__,timesfm.patched_decoder.ResidualBlock.__call__,timesfm.patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}]",JTensor,other,False,call,33,timesfm.patched_decoder
+125,120,function,_masked_mean_std,timesfm.patched_decoder._masked_mean_std,timesfm.patched_decoder,"Calculates mean and standard deviation of arr across axis 1.
+
+It should exclude values where pad is 1.
+
+Args:
+  inputs: A JAX array of shape [b, n, p].
+  padding: A JAX array of shape [b, n, p] with values 0 or 1.
+
+Returns:
+  A tuple containing the mean and standard deviation of arr. We return the
+  statistics of the first patch with more than three non-padded values.","[{'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'padding', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}]","Tuple[JTensor, JTensor]",other,False,masked_mean_std,2,timesfm.patched_decoder
+126,120,function,_create_quantiles,timesfm.patched_decoder._create_quantiles,timesfm.patched_decoder,Returns the quantiles for forecasting.,[],list[float],other,False,create_quantiles,1,timesfm.patched_decoder
+127,120,class,PatchedTimeSeriesDecoder,timesfm.patched_decoder.PatchedTimeSeriesDecoder,timesfm.patched_decoder,"Patch decoder layer for time-series foundation model.
+
+Attributes:
+  patch_len: length of input patches.
+  horizon_len: length of output patches. Referred to as `output_patch_len`
+    during inference.
+  model_dims: model dimension of stacked transformer layer.
+  hidden_dims: hidden dimensions in fully connected layers.
+  quantiles: list of quantiles for non prob model.
+  residual_block_tpl: config for residual block.
+  stacked_transformer_params_tpl: config for stacked transformer.
+  use_freq: whether to use frequency encoding.
+
+In all of what followed, except specified otherwise, B is batch size, T is
+sequence length of time-series. N is the number of input patches that can be
+obtained from T. P is the input patch length and H is the horizon length. Q is
+number of output logits. D is model dimension.",,,other,False,patched_time_series_decoder,10,timesfm.patched_decoder
+128,127,method,setup,timesfm.patched_decoder.PatchedTimeSeriesDecoder.setup,timesfm.patched_decoder,Construct the model.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",None,other,False,setup,32,timesfm.patched_decoder
+129,127,method,transform_decode_state,timesfm.patched_decoder.PatchedTimeSeriesDecoder.transform_decode_state,timesfm.patched_decoder,Transforms all decode state variables based on transform_fn.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'transform_fn', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'base_layer.DecodeStateTransformFn', 'has_default': False, 'default_repr': ''}]",None,io_read,False,transform_decode_state,34,timesfm.patched_decoder
+130,127,method,_forward_transform,timesfm.patched_decoder.PatchedTimeSeriesDecoder._forward_transform,timesfm.patched_decoder,"Input is of shape [B, N, P].","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'patched_pads', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}]","Tuple[JTensor, Tuple[JTensor, JTensor]]",other,False,forward_transform,19,timesfm.patched_decoder
+131,127,method,_reverse_transform,timesfm.patched_decoder.PatchedTimeSeriesDecoder._reverse_transform,timesfm.patched_decoder,"Output is of shape [B, N, P, Q].","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'outputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'stats', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Tuple[JTensor, JTensor]', 'has_default': False, 'default_repr': ''}]",JTensor,other,False,reverse_transform,20,timesfm.patched_decoder
+132,127,method,_preprocess_input,timesfm.patched_decoder.PatchedTimeSeriesDecoder._preprocess_input,timesfm.patched_decoder,Preprocess input for stacked transformer.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'input_ts', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'input_padding', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'pos_emb', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Optional[JTensor]', 'has_default': True, 'default_repr': 'None'}]","Tuple[JTensor, JTensor, Optional[Tuple[JTensor, JTensor]], JTensor]",other,False,preprocess_input,21,timesfm.patched_decoder
+133,127,method,_postprocess_output,timesfm.patched_decoder.PatchedTimeSeriesDecoder._postprocess_output,timesfm.patched_decoder,Postprocess output of stacked transformer.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'model_output', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'num_outputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'stats', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Tuple[JTensor, JTensor]', 'has_default': False, 'default_repr': ''}]",JTensor,other,False,postprocess_output,22,timesfm.patched_decoder
+134,127,method,__call__,timesfm.patched_decoder.PatchedTimeSeriesDecoder.__call__,timesfm.patched_decoder,"PatchTST call.
+
+Args:
+  inputs: A NestedMap containing (1) input_ts: input sequence of shape [B,
+    T] where T must be multiple of patch_length; (2) input_padding: that
+    contains padding map.
+
+Returns:
+  A nested map with two keys:
+  (1) 'output_tokens' of shape [B, N, D].
+  (2) 'output_ts' of shape [B, N, H, Q]
+  (3) 'stats' a Tuple of statistics for renormalization.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'NestedMap', 'has_default': False, 'default_repr': ''}]",NestedMap,other,False,call,33,timesfm.patched_decoder
+135,127,method,decode,timesfm.patched_decoder.PatchedTimeSeriesDecoder.decode,timesfm.patched_decoder,"Auto-regressive decoding without caching.
+
+Args:
+  inputs: input time-series and paddings. Time-series shape B x C, padding
+    shape shape B x (C + H) where H is the prediction length.
+  horizon_len: prediction length.
+  output_patch_len: output length to be fetched from one step of
+    auto-regressive decoding.
+  max_len: maximum training context length.
+  return_forecast_on_context: whether to return the model forecast on the
+    context except the first input patch.
+
+Returns:
+  Tuple of two forecasting results:
+  - Point (mean) output predictions as a tensor with shape B x H'.
+  - Full predictions (mean and quantiles) as a tensor with shape
+    B x H' x (1 + # quantiles).
+  In particular, if return_forecast_on_context is True, H' is H plus
+  the forecastable context length, i.e. context_len - (first) patch_len.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'NestedMap', 'has_default': False, 'default_repr': ''}, {'name': 'horizon_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': False, 'default_repr': ''}, {'name': 'output_patch_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Optional[int]', 'has_default': True, 'default_repr': 'None'}, {'name': 'max_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'return_forecast_on_context', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","tuple[JTensor, JTensor]",io_read,False,decode,23,timesfm.patched_decoder
+136,120,class,PatchedDecoderFinetuneModel,timesfm.patched_decoder.PatchedDecoderFinetuneModel,timesfm.patched_decoder,"Model class for finetuning patched time-series decoder.
+
+Attributes:
+  core_layer_tpl: config for core layer.
+  freq: freq to finetune on.",,,other,False,patched_decoder_finetune_model,14,timesfm.patched_decoder
+137,136,method,setup,timesfm.patched_decoder.PatchedDecoderFinetuneModel.setup,timesfm.patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",None,other,False,setup,32,timesfm.patched_decoder
+138,136,method,compute_predictions,timesfm.patched_decoder.PatchedDecoderFinetuneModel.compute_predictions,timesfm.patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'input_batch', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'NestedMap', 'has_default': False, 'default_repr': ''}]",NestedMap,other,False,compute_predictions,35,timesfm.patched_decoder
+139,136,method,_quantile_loss,timesfm.patched_decoder.PatchedDecoderFinetuneModel._quantile_loss,timesfm.patched_decoder,"Calculates quantile loss.
+
+Args:
+  pred: B x T
+  actual: B x T
+  quantile: quantile at which loss is computed.
+
+Returns:
+  per coordinate loss.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'pred', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'actual', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'JTensor', 'has_default': False, 'default_repr': ''}, {'name': 'quantile', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'float', 'has_default': False, 'default_repr': ''}]",JTensor,other,False,quantile_loss,36,timesfm.patched_decoder
+140,136,method,compute_loss,timesfm.patched_decoder.PatchedDecoderFinetuneModel.compute_loss,timesfm.patched_decoder,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'prediction_output', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'NestedMap', 'has_default': False, 'default_repr': ''}, {'name': 'input_batch', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'NestedMap', 'has_default': False, 'default_repr': ''}]","Tuple[NestedMap, NestedMap]",other,False,compute_loss,37,timesfm.patched_decoder
+141,120,external,dataclasses,dataclasses,timesfm.patched_decoder,,,,other,False,dataclasses,9,dataclasses
+142,120,external,typing,typing,timesfm.patched_decoder,,,,other,False,typing,11,typing
+143,120,external,einshape,einshape,timesfm.patched_decoder,,,,other,False,einshape,18,einshape
+144,120,external,jax,jax,timesfm.patched_decoder,,,,other,False,jax,19,jax
+145,120,external,numpy,jax.numpy,timesfm.patched_decoder,,,,other,False,numpy,1,jax.numpy
+146,120,external,praxis,praxis,timesfm.patched_decoder,,,,other,False,praxis,22,praxis
+147,120,external,layers,praxis.layers,timesfm.patched_decoder,,,,other,False,layers,23,praxis.layers
+148,,module,timesfm_torch,timesfm.timesfm_torch,timesfm.timesfm_torch,TimesFM pytorch forecast API for inference.,,,other,False,timesfm_torch,7,timesfm.timesfm_torch
+149,148,class,TimesFmTorch,timesfm.timesfm_torch.TimesFmTorch,timesfm.timesfm_torch,TimesFM forecast API for inference.,,,other,False,times_fm_torch,15,timesfm.timesfm_torch
+150,149,method,__post_init__,timesfm.timesfm_torch.TimesFmTorch.__post_init__,timesfm.timesfm_torch,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,post_init,25,timesfm.timesfm_torch
+151,149,method,load_from_checkpoint,timesfm.timesfm_torch.TimesFmTorch.load_from_checkpoint,timesfm.timesfm_torch,Loads a checkpoint and compiles the decoder.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'checkpoint', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'timesfm_base.TimesFmCheckpoint', 'has_default': False, 'default_repr': ''}]",None,io_read,False,load_from_checkpoint,26,timesfm.timesfm_torch
+152,149,method,_forecast,timesfm.timesfm_torch.TimesFmTorch._forecast,timesfm.timesfm_torch,"Forecasts on a list of time series.
+
+Args:
+  inputs: list of time series forecast contexts. Each context time series
+    should be in a format convertible to JTensor by `jnp.array`.
+  freq: frequency of each context time series. 0 for high frequency
+    (default), 1 for medium, and 2 for low. Notice this is different from
+    the `freq` required by `forecast_on_df`.
+  window_size: window size of trend + residual decomposition. If None then
+    we do not do decomposition.
+  forecast_context_len: optional max context length.
+  return_forecast_on_context: True to return the forecast on the context
+    when available, i.e. after the first input patch.
+
+Returns:
+A tuple for JTensors:
+- the mean forecast of size (# inputs, # forecast horizon),
+- the full forecast (mean + quantiles) of size
+    (# inputs,  # forecast horizon, 1 + # quantiles).
+
+Raises:
+ValueError: If the checkpoint is not properly loaded.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[Any]', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'window_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'forecast_context_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'return_forecast_on_context', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","tuple[np.ndarray, np.ndarray]",other,False,forecast,28,timesfm.timesfm_torch
+153,148,external,logging,logging,timesfm.timesfm_torch,,,,other,False,logging,14,logging
+154,148,external,os,os,timesfm.timesfm_torch,,,,other,False,os,17,os
+155,148,external,typing,typing,timesfm.timesfm_torch,,,,other,False,typing,11,typing
+156,148,external,numpy,numpy,timesfm.timesfm_torch,,,,other,False,numpy,1,numpy
+157,148,external,torch,torch,timesfm.timesfm_torch,,,,other,False,torch,12,torch
+158,148,external,huggingface_hub,huggingface_hub,timesfm.timesfm_torch,,,,other,False,huggingface_hub,20,huggingface_hub
+159,,module,timesfm_base,timesfm.timesfm_base,timesfm.timesfm_base,Base class for TimesFM inference. This will be common to PAX and Pytorch.,,,other,False,timesfm_base,8,timesfm.timesfm_base
+160,159,function,process_group,timesfm.timesfm_base.process_group,timesfm.timesfm_base,,"[{'name': 'key', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'group', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'value_name', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'forecast_context_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,process_group,12,timesfm.timesfm_base
+161,159,function,moving_average,timesfm.timesfm_base.moving_average,timesfm.timesfm_base,Calculates the moving average using NumPy's convolution function.,"[{'name': 'arr', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'window_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,moving_average,13,timesfm.timesfm_base
+162,159,function,freq_map,timesfm.timesfm_base.freq_map,timesfm.timesfm_base,Returns the frequency map for the given frequency string.,"[{'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'str', 'has_default': False, 'default_repr': ''}]",,other,False,freq_map,14,timesfm.timesfm_base
+163,159,function,strip_leading_nans,timesfm.timesfm_base.strip_leading_nans,timesfm.timesfm_base,"Removes contiguous NaN values from the beginning of a NumPy array.
+
+Args:
+  arr: The input NumPy array.
+
+Returns:
+  A new NumPy array with leading NaN values removed.
+  If the array is all NaNs or empty, returns an empty array.","[{'name': 'arr', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,strip_leading_nans,15,timesfm.timesfm_base
+164,159,function,linear_interpolation,timesfm.timesfm_base.linear_interpolation,timesfm.timesfm_base,"Performs linear interpolation to fill NaN values in a 1D numpy array.
+
+Args:
+    arr: The 1D numpy array containing NaN values.
+
+Returns:
+    A new numpy array with NaN values filled using linear interpolation, 
+    or the original array if no NaNs are present. 
+    Returns None if the input is not a 1D array.
+    Returns the original array if there are no NaN values.","[{'name': 'arr', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,linear_interpolation,16,timesfm.timesfm_base
+165,159,function,_normalize,timesfm.timesfm_base._normalize,timesfm.timesfm_base,,"[{'name': 'batch', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,normalize,17,timesfm.timesfm_base
+166,159,function,_renormalize,timesfm.timesfm_base._renormalize,timesfm.timesfm_base,,"[{'name': 'batch', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'stats', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,renormalize,18,timesfm.timesfm_base
+167,159,class,TimesFmHparams,timesfm.timesfm_base.TimesFmHparams,timesfm.timesfm_base,"Hparams used to initialize a TimesFM model for inference.
+
+These are the sufficient subset of hparams to configure TimesFM inference
+agnostic to the checkpoint version, and are not necessarily the same as the
+hparams used to train the checkpoint.
+
+Attributes:
+  context_len: Largest context length the model allows for each decode call.
+    This technically can be any large, but practically should set to the
+    context length the checkpoint was trained with.
+  horizon_len: Forecast horizon.
+  input_patch_len: Input patch len.
+  output_patch_len: Output patch len. How many timepoints is taken from a
+    single step of autoregressive decoding. Can be set as the training horizon
+    of the checkpoint.
+  num_layers: Number of transformer layers in the model.
+  model_dims: Model dimension.
+  per_core_batch_size: Batch size on each core for data parallelism.
+  backend: One of ""cpu"", ""gpu"" or ""tpu"".
+  quantiles: Which quantiles are output by the model.",,,other,False,times_fm_hparams,16,timesfm.timesfm_base
+168,159,class,TimesFmCheckpoint,timesfm.timesfm_base.TimesFmCheckpoint,timesfm.timesfm_base,"Checkpoint used to initialize a TimesFM model for inference.
+
+Attributes:
+  version: Version of the checkpoint, e.g. ""jax"", ""torch"", ""tensorflow"", etc.
+    The factory will create the corresponding TimesFm inference class based on
+    this version.
+  path: Path to the checkpoint.
+  type: If provided, type of the checkpoint used by the specific checkpoint
+    loader per version.
+  step: If provided, step of the checkpoint.",,,other,False,times_fm_checkpoint,17,timesfm.timesfm_base
+169,159,class,TimesFmBase,timesfm.timesfm_base.TimesFmBase,timesfm.timesfm_base,"Base TimesFM forecast API for inference.
+
+This class is the scaffolding for calling TimesFM forecast. To properly use:
+  1. Create an instance with the correct hyperparameters of a TimesFM model.
+  2. Call `load_from_checkpoint` to load a compatible checkpoint.
+  3. Call `forecast` for inference.",,,other,False,times_fm_base,18,timesfm.timesfm_base
+170,169,method,_logging,timesfm.timesfm_base.TimesFmBase._logging,timesfm.timesfm_base,,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 's', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",,other,False,logging,38,timesfm.timesfm_base
+171,169,method,__post_init__,timesfm.timesfm_base.TimesFmBase.__post_init__,timesfm.timesfm_base,Additional initialization for subclasses before checkpoint loading.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}]",None,other,False,post_init,25,timesfm.timesfm_base
+172,169,method,__init__,timesfm.timesfm_base.TimesFmBase.__init__,timesfm.timesfm_base,"Initializes the TimesFM forecast API.
+
+Args:
+  hparams: Hyperparameters of the model.
+  checkpoint: Checkpoint to load. Notice `checkpoint.version` will decide
+    which TimesFM version to use.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'hparams', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'TimesFmHparams', 'has_default': False, 'default_repr': ''}, {'name': 'checkpoint', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'TimesFmCheckpoint', 'has_default': False, 'default_repr': ''}]",None,other,False,init,0,timesfm.timesfm_base
+173,169,method,load_from_checkpoint,timesfm.timesfm_base.TimesFmBase.load_from_checkpoint,timesfm.timesfm_base,Loads a checkpoint and compiles the decoder.,"[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'checkpoint', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'TimesFmCheckpoint', 'has_default': False, 'default_repr': ''}]",None,io_read,False,load_from_checkpoint,26,timesfm.timesfm_base
+174,169,method,_preprocess,timesfm.timesfm_base.TimesFmBase._preprocess,timesfm.timesfm_base,"Formats and pads raw inputs to feed into the model.
+
+This function both pads each time series to match the context length, and
+pads the inputs to meet the SPMD shape requirement.
+
+Args:
+  inputs: A list of 1d JTensors. Each JTensor is the context time series of
+    a single forecast task.
+  freq: list of frequencies
+
+Returns:
+A tuple of:
+- the padded input time series to meet the model required context.
+- the padding indicator.
+- the frequency of each input time series.
+- the number of padded examples for SPMD so that each core has the same
+    number (a multiple of `batch_size`) of examples.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[np.ndarray]', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int]', 'has_default': False, 'default_repr': ''}]","tuple[np.ndarray, np.ndarray, np.ndarray, int]",other,False,preprocess,39,timesfm.timesfm_base
+175,169,method,_forecast,timesfm.timesfm_base.TimesFmBase._forecast,timesfm.timesfm_base,"Forecasts on a list of time series.
+
+Args:
+  inputs: list of time series forecast contexts. Each context time series
+    should be in a format convertible to JTensor by `jnp.array`.
+  freq: frequency of each context time series. 0 for high frequency
+    (default), 1 for medium, and 2 for low. Notice this is different from
+    the `freq` required by `forecast_on_df`.
+  window_size: window size of trend + residual decomposition. If None then
+    we do not do decomposition.
+  forecast_context_len: optional max context length.
+  return_forecast_on_context: True to return the forecast on the context
+    when available, i.e. after the first input patch.
+
+Returns:
+A tuple for np.array:
+- the mean forecast of size (# inputs, # forecast horizon),
+- the full forecast (mean + quantiles) of size
+    (# inputs,  # forecast horizon, 1 + # quantiles).
+
+Raises:
+ValueError: If the checkpoint is not properly loaded.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[Any]', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'window_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'forecast_context_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'return_forecast_on_context', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","tuple[np.ndarray, np.ndarray]",other,False,forecast,28,timesfm.timesfm_base
+176,169,method,forecast,timesfm.timesfm_base.TimesFmBase.forecast,timesfm.timesfm_base,"Forecasts on a list of time series.
+
+Args:
+  inputs: list of time series forecast contexts. Each context time series
+    should be in a format convertible to JTensor by `jnp.array`.
+  freq: frequency of each context time series. 0 for high frequency
+    (default), 1 for medium, and 2 for low. Notice this is different from
+    the `freq` required by `forecast_on_df`.
+  window_size: window size of trend + residual decomposition. If None then
+    we do not do decomposition.
+  forecast_context_len: optional max context length.
+  return_forecast_on_context: True to return the forecast on the context
+    when available, i.e. after the first input patch.
+  normalize: If True, then we normalize the inputs before forecasting and
+    the outputs are then renormalized to the original scale.
+
+Returns:
+A tuple for np.array:
+- the mean forecast of size (# inputs, # forecast horizon),
+- the full forecast (mean + quantiles) of size
+    (# inputs,  # forecast horizon, 1 + # quantiles).
+
+Raises:
+ValueError: If the checkpoint is not properly loaded.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[Any]', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'window_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'forecast_context_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'return_forecast_on_context', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}, {'name': 'normalize', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]","tuple[np.ndarray, np.ndarray]",other,False,forecast,28,timesfm.timesfm_base
+177,169,method,forecast_with_covariates,timesfm.timesfm_base.TimesFmBase.forecast_with_covariates,timesfm.timesfm_base,"Forecasts on a list of time series with covariates.
+
+To optimize inference speed, avoid string valued categorical covariates.
+
+Args:
+  inputs: A list of time series forecast contexts. Each context time series
+    should be in a format convertible to JTensor by `jnp.array`.
+  dynamic_numerical_covariates: A dict of dynamic numerical covariates.
+  dynamic_categorical_covariates: A dict of dynamic categorical covariates.
+  static_numerical_covariates: A dict of static numerical covariates.
+  static_categorical_covariates: A dict of static categorical covariates.
+  freq: frequency of each context time series. 0 for high frequency
+    (default), 1 for medium, and 2 for low. Notice this is different from
+    the `freq` required by `forecast_on_df`.
+  window_size: window size of trend + residual decomposition. If None then
+    we do not do decomposition.
+  forecast_context_len: optional max context length.
+  xreg_mode: one of ""xreg + timesfm"" or ""timesfm + xreg"". ""xreg + timesfm""
+    fits a model on the residuals of the TimesFM forecast. ""timesfm + xreg""
+    fits a model on the targets then forecasts on the residuals via TimesFM.
+  normalize_xreg_target_per_input: whether to normalize the xreg target per
+    input in the given batch.
+  ridge: ridge penalty for the linear model.
+  max_rows_per_col: max number of rows per column for the linear model.
+  force_on_cpu: whether to force running on cpu for the linear model.
+
+Returns:
+  A tuple of two lists. The first is the outputs of the model. The second is
+  the outputs of the xreg.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'list[Sequence[float]]', 'has_default': False, 'default_repr': ''}, {'name': 'dynamic_numerical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'dict[str, Sequence[Sequence[float]]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'dynamic_categorical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'dict[str, Sequence[Sequence[Category]]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'static_numerical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'dict[str, Sequence[float]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'static_categorical_covariates', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'dict[str, Sequence[Category]] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'Sequence[int] | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'window_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'forecast_context_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'xreg_mode', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'XRegMode', 'has_default': True, 'default_repr': ""'xreg + timesfm'""}, {'name': 'normalize_xreg_target_per_input', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'True'}, {'name': 'ridge', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'float', 'has_default': True, 'default_repr': '0.0'}, {'name': 'max_rows_per_col', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': True, 'default_repr': '0'}, {'name': 'force_on_cpu', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}]",,other,False,forecast_with_covariates,40,timesfm.timesfm_base
+178,169,method,forecast_on_df,timesfm.timesfm_base.TimesFmBase.forecast_on_df,timesfm.timesfm_base,"Forecasts on a list of time series.
+
+Args:
+  inputs: A pd.DataFrame of all time series. The dataframe should have a
+    `unique_id` column for identifying the time series, a `ds` column for
+    timestamps and a value column for the time series values.
+  freq: string valued `freq` of data. Notice this is different from the
+    `freq` required by `forecast`. See `freq_map` for allowed values.
+  forecast_context_len: If provided none zero, we take the last
+    `forecast_context_len` time-points from each series as the forecast
+    context instead of the `context_len` set by the model.
+  value_name: The name of the value column.
+  model_name: name of the model to be written into future df.
+  window_size: window size of trend + residual decomposition. If None then
+    we do not do decomposition.
+  num_jobs: number of parallel processes to use for dataframe processing.
+  normalize: normalize context before forecasting or not.
+  verbose: output model states in terminal.
+
+Returns:
+  Future forecasts dataframe.","[{'name': 'self', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': '', 'has_default': False, 'default_repr': ''}, {'name': 'inputs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'pd.DataFrame', 'has_default': False, 'default_repr': ''}, {'name': 'freq', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'str', 'has_default': False, 'default_repr': ''}, {'name': 'forecast_context_len', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': True, 'default_repr': '0'}, {'name': 'value_name', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'str', 'has_default': True, 'default_repr': ""'values'""}, {'name': 'model_name', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'str', 'has_default': True, 'default_repr': ""'timesfm'""}, {'name': 'window_size', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int | None', 'has_default': True, 'default_repr': 'None'}, {'name': 'num_jobs', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'int', 'has_default': True, 'default_repr': '1'}, {'name': 'normalize', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'False'}, {'name': 'verbose', 'kind': 'POSITIONAL_OR_KEYWORD', 'annotation': 'bool', 'has_default': True, 'default_repr': 'True'}]",pd.DataFrame,other,False,forecast_on_df,41,timesfm.timesfm_base
+179,159,external,collections,collections,timesfm.timesfm_base,,,,other,False,collections,26,collections
+180,159,external,dataclasses,dataclasses,timesfm.timesfm_base,,,,other,False,dataclasses,9,dataclasses
+181,159,external,logging,logging,timesfm.timesfm_base,,,,other,False,logging,14,logging
+182,159,external,multiprocessing,multiprocessing,timesfm.timesfm_base,,,,other,False,multiprocessing,15,multiprocessing
+183,159,external,typing,typing,timesfm.timesfm_base,,,,other,False,typing,11,typing
+184,159,external,numpy,numpy,timesfm.timesfm_base,,,,other,False,numpy,1,numpy
+185,159,external,pandas,pandas,timesfm.timesfm_base,,,,other,False,pandas,2,pandas
+186,159,external,processing,utilsforecast.processing,timesfm.timesfm_base,,,,other,False,processing,27,utilsforecast.processing
