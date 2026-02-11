@@ -11,6 +11,22 @@ cd /mnt/e/env/ts/lib_ana/src/ui/lib_analysis/db/streamlit_app
 streamlit run /mnt/e/env/ts/lib_ana/src/ui/lib_analysis/db/streamlit_app/app.py
 ```
 
+## トラブルシュート
+### `TypeError: Failed to fetch dynamically imported module` が出る場合
+このエラーは、多くの場合 Streamlit 本体の静的 JS 読み込み不整合で発生します。  
+（`/static/js/index.<hash>.js` の取得失敗）
+
+1. Streamlit を固定バージョンで入れ直す
+```bash
+pip install --force-reinstall "streamlit==1.54.0"
+```
+
+2. ブラウザで `http://localhost:8501` を開き、ハードリロードする
+3. それでも解消しない場合は、別ポートで起動して確認する
+```bash
+streamlit run /mnt/e/env/ts/lib_ana/src/ui/lib_analysis/db/streamlit_app/app.py --server.port 8502
+```
+
 ## 設定
 - 接続プロファイル: `configs/db_admin_profiles.example.json` を参考に作成
 - パスワードは `Streamlit secrets (.streamlit/secrets.toml)` か環境変数で管理すること（コード直書き禁止）

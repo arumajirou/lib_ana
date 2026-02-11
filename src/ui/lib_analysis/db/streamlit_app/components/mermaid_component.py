@@ -1,10 +1,8 @@
 from __future__ import annotations
-import html
 import streamlit.components.v1 as components
 
 def mermaid(code: str, height: int = 600) -> None:
     """Mermaid を Streamlit 上で描画（CDN利用）。"""
-    safe = html.escape(code)
     html_doc = f"""<!doctype html>
 <html>
   <head>
@@ -12,7 +10,7 @@ def mermaid(code: str, height: int = 600) -> None:
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   </head>
   <body>
-    <div class="mermaid">{safe}</div>
+    <div class="mermaid">{code}</div>
     <script>
       mermaid.initialize({{ startOnLoad: true, theme: "default" }});
     </script>

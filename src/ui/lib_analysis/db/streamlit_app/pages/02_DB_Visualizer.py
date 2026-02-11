@@ -57,11 +57,19 @@ with col1:
     st.subheader("ER図（外部キーFKベース）")
     try:
         fk_rows = insp.get_fk_edges(schema)
-        if len(fk_rows) > max_edges:
-            fk_rows = fk_rows[:max_edges]
-            st.warning(f"エッジ数が多いため先頭 {max_edges} 件に制限しました。")
+        if not fk_rows:
+            st.warning("外部キーが見つかりません。テーブル一覧のみのER図を表示します。")
+            tables = insp.list_tables(schema)
+            if len(tables) > max_edges:
+                tables = tables[:max_edges]
+                st.warning(f"テーブル数が多いため先頭 {max_edges} 件に制限しました。")
+            g = GraphBuilder().build_table_graph(schema, tables)
+        else:
+            if len(fk_rows) > max_edges:
+                fk_rows = fk_rows[:max_edges]
+                st.warning(f"エッジ数が多いため先頭 {max_edges} 件に制限しました。")
+            g = GraphBuilder().build_er_graph_from_fk_rows(fk_rows, schema_filter=schema)
 
-        g = GraphBuilder().build_er_graph_from_fk_rows(fk_rows, schema_filter=schema)
         code = render_er_mermaid(g, show_schema=show_schema)
         mermaid(code, height=720)
         st.download_button("Mermaid（.mmd）をダウンロード", data=code, file_name=f"{db}_{schema}_er.mmd")
@@ -77,11 +85,11 @@ with col2:
             for r in top_size:
                 r["total"] = human_bytes(r["total_bytes"])
             st.markdown("#### サイズ TOP 20")
-            st.dataframe(top_size, use_container_width=True)
+            st.dataframe(top_size, width="stretch")
 
         top_writes = insp.top_tables_by_updates(schema, limit=20)
         if top_writes:
             st.markdown("#### 更新（write）TOP 20")
-            st.dataframe(top_writes, use_container_width=True)
+            st.dataframe(top_writes, width="stretch")
     except DbError as e:
         st.error(f"統計取得に失敗: {e}")

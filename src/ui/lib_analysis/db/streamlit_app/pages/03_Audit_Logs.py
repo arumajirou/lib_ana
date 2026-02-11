@@ -63,7 +63,7 @@ try:
     df = pd.DataFrame(rows)
     prefer = ["ts", "status", "action", "target", "profile", "elapsed_ms", "error"]
     cols = [c for c in prefer if c in df.columns] + [c for c in df.columns if c not in prefer]
-    st.dataframe(df[cols], use_container_width=True)
+    st.dataframe(df[cols], width="stretch")
 except Exception:
     st.json(rows)
 

@@ -26,6 +26,14 @@ class GraphBuilder:
             g.add_edge(Edge(src=child_id, dst=parent_id, edge_type="fk", label=r.get("fk_name", "")))
         return g
 
+    def build_table_graph(self, schema: str, tables: List[str]) -> Graph:
+        g = Graph()
+        for t in tables:
+            node_id = _table_id(schema, t)
+            if node_id not in g.nodes:
+                g.add_node(Node(node_id=node_id, label=t, node_type="table", meta={"schema": schema}))
+        return g
+
     def build_dep_graph_simple(self, edges: List[Tuple[str, str, str]]) -> Graph:
         g = Graph()
         for src, dst, label in edges:

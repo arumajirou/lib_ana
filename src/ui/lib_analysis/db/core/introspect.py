@@ -16,6 +16,9 @@ class TableRef:
 class Introspector:
     def __init__(self, client: PgClient):
         self.client = client
+    @staticmethod
+    def _quote_ident(ident: str) -> str:
+        return '"' + ident.replace('"', '""') + '"'
 
     def list_databases(self) -> List[str]:
         rows = self.client.execute(
@@ -30,7 +33,7 @@ class Introspector:
         rows = self.client.execute(
             """SELECT nspname
                  FROM pg_namespace
-                 WHERE nspname NOT LIKE 'pg_%'
+                 WHERE nspname NOT LIKE 'pg_%%'
                    AND nspname <> 'information_schema'
                  ORDER BY 1;"""
         )
@@ -110,12 +113,28 @@ class Introspector:
         )
         return rows[0] if rows else {}
 
+    def get_column_stats(self, schema: str, table: str) -> List[Dict[str, Any]]:
+        rows = self.client.execute(
+            """SELECT
+                    attname AS column_name,
+                    null_frac,
+                    n_distinct,
+                    most_common_vals,
+                    most_common_freqs,
+                    histogram_bounds
+                FROM pg_stats
+                WHERE schemaname = %s AND tablename = %s
+                ORDER BY attname;""",
+            (schema, table),
+        )
+        return rows
+
     def get_size_bytes(self, schema: str, table: str) -> Dict[str, int]:
         rows = self.client.execute(
             """SELECT
-                    pg_total_relation_size(format('%I.%I', %s, %s)) AS total_bytes,
-                    pg_relation_size(format('%I.%I', %s, %s)) AS table_bytes,
-                    pg_indexes_size(format('%I.%I', %s, %s)) AS index_bytes;""",
+                    pg_total_relation_size(format('%%I.%%I', %s::text, %s::text)) AS total_bytes,
+                    pg_relation_size(format('%%I.%%I', %s::text, %s::text)) AS table_bytes,
+                    pg_indexes_size(format('%%I.%%I', %s::text, %s::text)) AS index_bytes;""",
             (schema, table, schema, table, schema, table),
         )
         if not rows:
@@ -156,29 +175,43 @@ class Introspector:
                 child_schema, child_table, parent_schema, parent_table, fk_name,
                 child_keys, parent_keys
             FROM rels
-            WHERE (%s IS NULL OR child_schema = %s OR parent_schema = %s)
+            WHERE (%s::text IS NULL OR child_schema = %s::text OR parent_schema = %s::text)
             ORDER BY child_schema, child_table, fk_name;"""
         return self.client.execute(sql, (schema, schema, schema))
 
     def get_table_overview(self, schema: str, table: str) -> Dict[str, Any]:
         return {
             "columns": self.get_columns(schema, table),
+            "column_stats": self.get_column_stats(schema, table),
             "constraints": self.get_constraints(schema, table),
             "indexes": self.get_indexes(schema, table),
             "stats": self.get_stats(schema, table),
             "size_bytes": self.get_size_bytes(schema, table),
         }
 
+    def get_table_sample(self, schema: str, table: str, limit: int = 100) -> List[Dict[str, Any]]:
+        q_schema = self._quote_ident(schema)
+        q_table = self._quote_ident(table)
+        sql = f"SELECT * FROM {q_schema}.{q_table} LIMIT %s;"
+        return self.client.execute(sql, (limit,))
+
+    def get_distinct_values(self, schema: str, table: str, column: str, limit: int = 50) -> List[Dict[str, Any]]:
+        q_schema = self._quote_ident(schema)
+        q_table = self._quote_ident(table)
+        q_column = self._quote_ident(column)
+        sql = f"SELECT DISTINCT {q_column} AS value FROM {q_schema}.{q_table} LIMIT %s;"
+        return self.client.execute(sql, (limit,))
+
     def top_tables_by_size(self, schema: str, limit: int = 20) -> List[Dict[str, Any]]:
         rows = self.client.execute(
             """SELECT
                     schemaname,
                     relname,
-                    pg_total_relation_size(format('%I.%I', schemaname, relname)) AS total_bytes
+                    pg_total_relation_size(format('%%I.%%I', schemaname, relname)) AS total_bytes
                 FROM pg_stat_user_tables
                 WHERE schemaname = %s
                 ORDER BY total_bytes DESC
-                LIMIT %s;""",
+                LIMIT %s::int;""",
             (schema, limit),
         )
         for r in rows:
@@ -194,7 +227,7 @@ class Introspector:
                 FROM pg_stat_user_tables
                 WHERE schemaname = %s
                 ORDER BY writes DESC
-                LIMIT %s;""",
+                LIMIT %s::int;""",
             (schema, limit),
         )
         for r in rows:
