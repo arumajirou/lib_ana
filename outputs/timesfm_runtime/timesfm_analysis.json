@@ -1,6 +1,0 @@
-{
-  "status": "skipped",
-  "reason": "pred_df is None",
-  "model_error": "checkpoint_path or huggingface_repo_id is required.",
-  "forecast_error": "model is None (checkpoint not set or load failed)."
-}

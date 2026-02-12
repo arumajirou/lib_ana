@@ -1,6 +1,0 @@
-{
-  "status": "error",
-  "error": "checkpoint_path or huggingface_repo_id is required.",
-  "checkpoint": "None",
-  "hparams": "None"
-}
